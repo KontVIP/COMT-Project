@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_home"
+        android:icon="@drawable/ic_baseline_home_24"
+        android:title="Головна" />
+
+    <item
+        android:id="@+id/nav_catalog"
+        android:icon="@drawable/ic_baseline_catalog_24"
+        android:title="Каталог" />
+
+    <item
+        android:id="@+id/nav_shopping_cart"
+        android:icon="@drawable/ic_baseline_shopping_cart_24"
+        android:title="Кошик" />
+
+    <item
+        android:id="@+id/nav_favorites"
+        android:icon="@drawable/ic_baseline_favorite_24"
+        android:title="Бажання" />
+
+    <item
+        android:id="@+id/nav_menu"
+        android:icon="@drawable/ic_baseline_menu_24"
+        android:title="Меню" />
+
+</menu>
