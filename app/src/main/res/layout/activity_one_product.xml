@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".catalog.OneProductActivity"
+    android:orientation="vertical">
+
+    <include
+        layout="@layout/toolbar_activity"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <!-- Image Layout -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="400dp"
+                    android:background="@drawable/border"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginLeft="4dp"
+                    android:gravity="center"
+                    android:layout_weight="7">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/model_leather_coat"
+                        android:layout_margin="4dp"/>
+
+                </LinearLayout>
+
+                <!--Top right side-->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="400dp"
+                    android:background="@drawable/border"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginRight="4dp"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:layout_weight="2">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="У наявності" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Код: 936431"/>
+                    <RatingBar
+                        android:layout_width="80dp"
+                        style="?android:attr/ratingBarStyleSmall"
+                        android:layout_height="wrap_content"/>
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:paddingBottom="4dp"
+                        android:gravity="bottom">
+                        <Button
+                            android:layout_width="80dp"
+                            android:layout_height="wrap_content"
+                            android:text="Поділитися"
+                            android:textSize="10sp"
+                            android:padding="0dp"
+                            android:textAllCaps="false"
+                            android:background="@color/white" />
+                    </LinearLayout>
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Size buttons -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="4dp">
+
+                <RadioGroup
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:foreground="?android:attr/selectableItemBackground"
+                        android:id="@+id/S_radiobutton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/radiobutton_background"
+                        android:button="@android:color/transparent"
+                        android:gravity="center"
+                        android:text="S"
+                        android:textSize="24sp"
+                        android:textColor="@drawable/radiobutton_text"/>
+                    <RadioButton
+                        android:id="@+id/M_radiobutton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/radiobutton_background"
+                        android:button="@android:color/transparent"
+                        android:gravity="center"
+                        android:text="M"
+                        android:textSize="24sp"
+                        android:textColor="@drawable/radiobutton_text"/>
+                    <RadioButton
+                        android:id="@+id/L_radiobutton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/radiobutton_background"
+                        android:button="@android:color/transparent"
+                        android:gravity="center"
+                        android:text="L"
+                        android:textSize="24sp"
+                        android:textColor="@drawable/radiobutton_text"/>
+                    <RadioButton
+                        android:id="@+id/XL_radiobutton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/radiobutton_background"
+                        android:button="@android:color/transparent"
+                        android:gravity="center"
+                        android:text="XL"
+                        android:textSize="24sp"
+                        android:textColor="@drawable/radiobutton_text"/>
+                    <RadioButton
+                        android:id="@+id/XXL_radiobutton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/radiobutton_background"
+                        android:button="@android:color/transparent"
+                        android:gravity="center"
+                        android:text="XXL"
+                        android:textSize="24sp"
+                        android:textColor="@drawable/radiobutton_text"/>
+                </RadioGroup>
+
+            </LinearLayout>
+
+            <!-- Description -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:background="@drawable/border"
+                android:layout_margin="4dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="4dp"
+                    android:text="Кожанка"
+                    android:textSize="18sp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Модная мужская курточка из плотной и мягкой эко-кожи производства американского бренда. Высокое качество, металлическая фурнитура, сьемный капюшон на молнии."
+                    android:padding="4dp"
+                    />
+
+            </LinearLayout>
+
+            <!-- TextView "other products" -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Інші товари"
+                android:textSize="18sp"
+                android:gravity="center"
+                android:background="@drawable/border"
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="4dp"/>
+
+            <!-- Other products -->
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none">
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="4dp"
+                        android:background="@drawable/border">
+                        <ImageView
+                            android:layout_width="100dp"
+                            android:layout_height="100dp"
+                            android:padding="1dp"
+                            android:src="@drawable/znak_voprosa" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="4dp"
+                        android:background="@drawable/border">
+                        <ImageView
+                            android:layout_width="100dp"
+                            android:layout_height="100dp"
+                            android:padding="1dp"
+                            android:src="@drawable/znak_voprosa" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="4dp"
+                        android:background="@drawable/border">
+                        <ImageView
+                            android:layout_width="100dp"
+                            android:layout_height="100dp"
+                            android:padding="1dp"
+                            android:src="@drawable/znak_voprosa" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="4dp"
+                        android:background="@drawable/border">
+                        <ImageView
+                            android:layout_width="100dp"
+                            android:layout_height="100dp"
+                            android:padding="1dp"
+                            android:src="@drawable/znak_voprosa" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="4dp"
+                        android:background="@drawable/border">
+                        <ImageView
+                            android:layout_width="100dp"
+                            android:layout_height="100dp"
+                            android:padding="1dp"
+                            android:src="@drawable/znak_voprosa" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="4dp"
+                        android:background="@drawable/border">
+                        <ImageView
+                            android:layout_width="100dp"
+                            android:layout_height="100dp"
+                            android:padding="1dp"
+                            android:src="@drawable/znak_voprosa" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </HorizontalScrollView>
+
+
+        </LinearLayout>
+    </ScrollView>
+
+
+</LinearLayout>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/list_catalog_item"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/title_catalog_image_view"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@drawable/znak_voprosa"
+            android:scaleType="fitXY"  />
+
+        <TextView
+            android:id="@+id/title_catalog_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center|left"
+            android:fontFamily="sans-serif-black"
+            android:text="Title"
+            android:layout_marginLeft="8dp"
+            android:textSize="24sp"/>
+
+    </LinearLayout>
+
+
+</LinearLayout>
