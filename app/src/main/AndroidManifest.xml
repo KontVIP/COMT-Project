@@ -11,6 +11,7 @@
         android:theme="@style/Theme.StylishClothes">
         <activity android:name=".catalog.OneProductActivity"></activity>
         <activity android:name=".catalog.ProductsActivity"></activity>
+        <activity android:name=".catalog.EditProductActivity"></activity>
         <activity android:name=".catalog.TrousersActivity"></activity>
         <activity android:name=".MainActivity">
             <intent-filter>

@@ -55,5 +55,14 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase DB = this.getWritableDatabase();
         return DB.rawQuery(sql, new String[] {category});
     }
+
+    public void updateCatalog(String originalTitle, String newTitle, byte[] image) {
+        SQLiteDatabase DB = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("title", newTitle);
+        values.put("image", image);
+        DB.update("Catalogs", values, "title=?", new String[]{originalTitle});
+        DB.close();
+    }
 }
 

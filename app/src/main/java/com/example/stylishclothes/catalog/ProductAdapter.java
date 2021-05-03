@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
@@ -30,9 +31,11 @@ import java.util.ArrayList;
 public class ProductAdapter extends ArrayAdapter<Product> {
 
     DBHelper DB = new DBHelper(getContext());
+    Intent mIntent;
 
-    public ProductAdapter(Activity context, ArrayList<Product> products) {
+    public ProductAdapter(Activity context, ArrayList<Product> products, Intent intent) {
         super(context, 0, products);
+        mIntent = intent;
     }
 
 
@@ -84,6 +87,7 @@ public class ProductAdapter extends ArrayAdapter<Product> {
                             case R.id.item_settings:
                                 //TODO
                                 Toast.makeText(getContext(), "Edited", Toast.LENGTH_SHORT).show();
+                                intentEditProductActivity(currentProduct);
 //                                AppCompatActivity activity = (AppCompatActivity) v.getContext();
 //                                AddCategoryFragment fragment = new AddCategoryFragment();
 //                                activity.getSupportFragmentManager().beginTransaction().replace(R.id.trousers_fragment_container, fragment).commit();
@@ -123,12 +127,21 @@ public class ProductAdapter extends ArrayAdapter<Product> {
             }
         });
 
+
         return listItemView;
     }
 
     private void setTitleOfOneProductActivity(Product currentProduct) {
         Intent intent = new Intent(getContext(), OneProductActivity.class);
         intent.putExtra("Title", currentProduct.getTitle());
+        getContext().startActivity(intent);
+    }
+
+    private void intentEditProductActivity(Product currentProduct) {
+        Intent intent = new Intent(getContext(), EditProductActivity.class);
+        intent.putExtra("Title", currentProduct.getTitle());
+        intent.putExtra("Image", currentProduct.getImage());
+        intent.putExtra("Intent", mIntent);
         getContext().startActivity(intent);
     }
 }

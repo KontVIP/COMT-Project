@@ -51,7 +51,7 @@ public class TrousersActivity extends OptionsMenuProductActivity {
         products = new ArrayList<Product>();
         loadData();
         listView = (ListView) findViewById(R.id.trousers_list);
-        productAdapter = new ProductAdapter(this, products);
+        productAdapter = new ProductAdapter(this, products, new Intent(this, TrousersActivity.class));
         listView.setAdapter(productAdapter);
 
         //Refresh Data
