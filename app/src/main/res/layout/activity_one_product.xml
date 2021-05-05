@@ -325,7 +325,7 @@
             android:background="@drawable/border"
             android:paddingLeft="4dp"
             android:paddingRight="4dp"
-            android:text="₴544"
+            android:text="₴554"
             android:textColor="@android:color/holo_red_dark"
             android:textSize="36sp" />
 
