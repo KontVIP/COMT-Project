@@ -43,7 +43,11 @@ public class TrousersActivity extends OptionsMenuProductActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trousers);
         toolBar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolBar);
+        try {
+            setSupportActionBar(toolBar);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 

@@ -32,6 +32,7 @@ public class ProductAdapter extends ArrayAdapter<Product> {
 
     DBHelper DB = new DBHelper(getContext());
     Intent mIntent;
+    Bitmap bitmap;
 
     public ProductAdapter(Activity context, ArrayList<Product> products, Intent intent) {
         super(context, 0, products);
@@ -58,8 +59,15 @@ public class ProductAdapter extends ArrayAdapter<Product> {
         //ImageView
         ImageView imageView = (ImageView) listItemView.findViewById(R.id.title_image_view);
         byte[] productImage = currentProduct.getImage();
-        Bitmap bitmap = BitmapFactory.decodeByteArray(productImage, 0, productImage.length);
-        imageView.setImageBitmap(bitmap);
+        try {
+            bitmap = BitmapFactory.decodeByteArray(productImage, 0, productImage.length);
+            imageView.setImageBitmap(bitmap);
+        } catch (Exception e) {
+            e.printStackTrace();
+            imageView.setImageResource(R.drawable.znak_voprosa);
+        }
+
+
 
         //LinearLayout
         View listProductItem = (View) listItemView.findViewById(R.id.list_product_item);
