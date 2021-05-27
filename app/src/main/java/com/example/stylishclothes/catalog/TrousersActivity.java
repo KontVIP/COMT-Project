@@ -1,10 +1,9 @@
 package com.example.stylishclothes.catalog;
 
-import android.app.FragmentManager;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -15,15 +14,23 @@ import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.PopupMenu;
-import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.stylishclothes.OptionsMenuProductActivity;
 import com.example.stylishclothes.R;
+import com.example.stylishclothes.auth.User;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -32,10 +39,11 @@ public class TrousersActivity extends OptionsMenuProductActivity {
     private ArrayList<Product> products;
     private PopupMenu popup;
     Context context = this;
-    DBHelper DB = new DBHelper(this);
+    Activity activity = this;
     ListView listView;
-    AdapterView<?> itemParent;
     ProductAdapter productAdapter;
+    private DatabaseReference mDatabase;
+    private String productId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,22 +59,31 @@ public class TrousersActivity extends OptionsMenuProductActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+
         //List
         products = new ArrayList<Product>();
-        loadData();
-        listView = (ListView) findViewById(R.id.trousers_list);
-        productAdapter = new ProductAdapter(this, products, new Intent(this, TrousersActivity.class));
-        listView.setAdapter(productAdapter);
+        try {
+            loadData();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
 
         //Refresh Data
         final SwipeRefreshLayout pullToRefresh = findViewById(R.id.pullToRefresh);
         pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                products.clear();
-                loadData();
-                listView.invalidateViews();
-                pullToRefresh.setRefreshing(false);
+                try {
+                    products.clear();
+                    loadData();
+                    listView.invalidateViews();
+                    pullToRefresh.setRefreshing(false);
+                } catch (Exception e) {
+                    pullToRefresh.setRefreshing(false);
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -79,7 +96,7 @@ public class TrousersActivity extends OptionsMenuProductActivity {
                 FrameLayout frame = (FrameLayout) findViewById(R.id.trousers_fragment_container);
                 frame.setVisibility(View.VISIBLE);
 
-                getSupportFragmentManager().beginTransaction().replace(R.id.trousers_fragment_container, new AddCategoryFragment()).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.trousers_fragment_container, new AddProductFragment()).commit();
             }
         });
 
@@ -103,16 +120,23 @@ public class TrousersActivity extends OptionsMenuProductActivity {
     }
 
     public void loadData() {
-        Cursor result = DB.getCatalogs("SELECT * FROM Catalogs WHERE category = ?", "Штани");
-        if (result.getCount() == 0) {
-            Toast.makeText(this, "No Catalogs Exist", Toast.LENGTH_SHORT).show();
-        } else {
-            while (result.moveToNext()) {
-                String title = result.getString(1);
-                byte[] image = result.getBlob(2);
-                products.add(new Product(title, image));
+        mDatabase.child("Product").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    Product product = dataSnapshot.getValue(Product.class);
+                    products.add(product);
+                }
+                listView = (ListView) findViewById(R.id.trousers_list);
+                productAdapter = new ProductAdapter(activity, products, new Intent(context, TrousersActivity.class));
+                listView.setAdapter(productAdapter);
             }
-        }
-    }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+    }
 }

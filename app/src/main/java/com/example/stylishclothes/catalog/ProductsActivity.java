@@ -1,18 +1,13 @@
 package com.example.stylishclothes.catalog;
 
-import android.database.Cursor;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.ListView;
-import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
 
 import com.example.stylishclothes.OptionsMenuProductActivity;
 import com.example.stylishclothes.R;
@@ -62,7 +57,7 @@ public class ProductsActivity extends OptionsMenuProductActivity {
                 FrameLayout frame = (FrameLayout) findViewById(R.id.fragment_container);
                 frame.setVisibility(View.VISIBLE);
 
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new AddCategoryFragment()).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new AddProductFragment()).commit();
             }
         });
 

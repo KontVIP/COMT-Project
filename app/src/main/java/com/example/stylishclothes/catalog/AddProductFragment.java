@@ -7,6 +7,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,14 +27,29 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.example.stylishclothes.R;
+import com.example.stylishclothes.auth.AuthActivity;
+import com.example.stylishclothes.auth.RegisterUserActivity;
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.URI;
 
 import static android.app.Activity.RESULT_OK;
 
-public class AddCategoryFragment extends Fragment {
+public class AddProductFragment extends Fragment {
 
     DBHelper DB;
     private ImageView image;
@@ -45,12 +61,27 @@ public class AddCategoryFragment extends Fragment {
     RadioButton rYes, rNo;
     CheckBox size_S, size_M, size_L, size_XL, size_XXL;
     int numImg;
+    final int ADDED_SUCCESSFULLY = 1;
+
+    Product product;
+
+    FirebaseDatabase firebaseDatabase;
+    DatabaseReference databaseReference;
+    private StorageReference storageRef;
+
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_add_category, container, false);
         getActivity().setTitle("Stylish Clothes");
+
+        //Database
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference = firebaseDatabase.getReference("Product");
+        storageRef = FirebaseStorage.getInstance().getReference("ImageDB");
+
+        product = new Product();
 
         //Edit text
         titleEditText = (EditText) rootView.findViewById(R.id.title_edit_text);
@@ -112,7 +143,8 @@ public class AddCategoryFragment extends Fragment {
                     numImg = 2;
                     image = (ImageView) rootView.findViewById(R.id.second_image);
                     imageIntent();
-                } else Toast.makeText(getContext(), "Choose previous photo", Toast.LENGTH_SHORT).show();
+                } else
+                    Toast.makeText(getContext(), "Choose previous photo", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -125,7 +157,8 @@ public class AddCategoryFragment extends Fragment {
                     numImg = 3;
                     image = (ImageView) rootView.findViewById(R.id.third_image);
                     imageIntent();
-                } else Toast.makeText(getContext(), "Choose previous photo", Toast.LENGTH_SHORT).show();
+                } else
+                    Toast.makeText(getContext(), "Choose previous photo", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -138,7 +171,8 @@ public class AddCategoryFragment extends Fragment {
                     numImg = 4;
                     image = (ImageView) rootView.findViewById(R.id.fourth_image);
                     imageIntent();
-                } else Toast.makeText(getContext(), "Choose previous photo", Toast.LENGTH_SHORT).show();
+                } else
+                    Toast.makeText(getContext(), "Choose previous photo", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -151,7 +185,8 @@ public class AddCategoryFragment extends Fragment {
                     numImg = 5;
                     image = (ImageView) rootView.findViewById(R.id.fifth_image);
                     imageIntent();
-                } else Toast.makeText(getContext(), "Choose previous photo", Toast.LENGTH_SHORT).show();
+                } else
+                    Toast.makeText(getContext(), "Choose previous photo", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -161,6 +196,7 @@ public class AddCategoryFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
             }
@@ -171,42 +207,139 @@ public class AddCategoryFragment extends Fragment {
         fab_done.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DB = new DBHelper(getContext());
-                try {
-                    if (titleEditText.getText().toString().length() == 0)
-                        Toast.makeText(getContext(), "New Catalog NOT Created", Toast.LENGTH_SHORT).show();
-                    else {
-                        DB.createCatalog(categorySpinner.getSelectedItem().toString(),
-                                titleEditText.getText().toString(),
-                                img_title,
-                                img_1,
-                                img_2,
-                                img_3,
-                                img_4,
-                                img_5,
-                                rYes.isChecked(),
-                                productCodeEditText.getText().toString(),
-                                size_S.isChecked(),
-                                size_M.isChecked(),
-                                size_L.isChecked(),
-                                size_XL.isChecked(),
-                                size_XXL.isChecked(),
-                                titleDescriptionEditText.getText().toString(),
-                                descriptionEditText.getText().toString(),
-                                priceEditText.getText().toString());
-                        Toast.makeText(getContext(), "New Catalog Created", Toast.LENGTH_SHORT).show();
-                    }
-                } catch (Exception e) {
-                    Toast.makeText(getContext(), "New Catalog NOT Created", Toast.LENGTH_SHORT).show();
-                    e.printStackTrace();
+                if(addDataToDatabase() == ADDED_SUCCESSFULLY) {
+                    Toast.makeText(getActivity(), "Data added!", Toast.LENGTH_SHORT).show();
+                    Fragment fragment = getActivity().getSupportFragmentManager().findFragmentById(R.id.trousers_fragment_container);
+                    getActivity().getSupportFragmentManager().beginTransaction().remove(fragment).commit();
                 }
-
-                Fragment fragment = getActivity().getSupportFragmentManager().findFragmentById(R.id.trousers_fragment_container);
-                getActivity().getSupportFragmentManager().beginTransaction().remove(fragment).commit();
             }
         });
 
         return rootView;
+    }
+
+    private int addDataToDatabase() {
+        String id = databaseReference.push().getKey();
+        String title = titleEditText.getText().toString().trim();
+        String titleDescription = titleDescriptionEditText.getText().toString();
+        String description = descriptionEditText.getText().toString();
+        String price = priceEditText.getText().toString().trim();
+        String code = productCodeEditText.getText().toString().trim();
+
+        product.setAvailable(rYes.isChecked());
+        product.setId(id);
+        product.setTitle(title);
+        product.setTitleDescription(titleDescription);
+        product.setDescription(description);
+        product.setPrice(price);
+        product.setProductCode(code);
+        product.setSizeS(size_S.isChecked());
+        product.setSizeM(size_M.isChecked());
+        product.setSizeL(size_L.isChecked());
+        product.setSizeXL(size_XL.isChecked());
+        product.setSizeXXL(size_XXL.isChecked());
+
+        UploadTask uploadTask;
+        Task<Uri> task;
+        if (img_title != null) {
+            final StorageReference mRef = storageRef.child(java.util.UUID.randomUUID() + "img");
+            uploadTask = mRef.putBytes(img_title);
+            task = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                @Override
+                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                    return mRef.getDownloadUrl();
+                }
+            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                @Override
+                public void onComplete(@NonNull Task<Uri> task) {
+                    product.setTitleImagePath(task.getResult().toString());
+                    databaseReference.child(id).setValue(product);
+                }
+            });
+        }
+        if (img_1 != null) {
+            final StorageReference mRef = storageRef.child(java.util.UUID.randomUUID() + "img");
+            uploadTask = mRef.putBytes(img_1);
+            task = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                @Override
+                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                    return mRef.getDownloadUrl();
+                }
+            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                @Override
+                public void onComplete(@NonNull Task<Uri> task) {
+                    product.setFirstImagePath(task.getResult().toString());
+                    databaseReference.child(id).setValue(product);
+                }
+            });
+        }
+        if (img_2 != null) {
+            final StorageReference mRef = storageRef.child(java.util.UUID.randomUUID() + "img");
+            uploadTask = mRef.putBytes(img_2);
+            task = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                @Override
+                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                    return mRef.getDownloadUrl();
+                }
+            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                @Override
+                public void onComplete(@NonNull Task<Uri> task) {
+                    product.setSecondImagePath(task.getResult().toString());
+                    databaseReference.child(id).setValue(product);
+                }
+            });
+        }
+        if (img_3 != null) {
+            final StorageReference mRef = storageRef.child(java.util.UUID.randomUUID() + "img");
+            uploadTask = mRef.putBytes(img_3);
+            task = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                @Override
+                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                    return mRef.getDownloadUrl();
+                }
+            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                @Override
+                public void onComplete(@NonNull Task<Uri> task) {
+                    product.setThirdImagePath(task.getResult().toString());
+                    databaseReference.child(id).setValue(product);
+                }
+            });
+        }
+        if (img_4 != null) {
+            final StorageReference mRef = storageRef.child(java.util.UUID.randomUUID() + "img");
+            uploadTask = mRef.putBytes(img_4);
+            task = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                @Override
+                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                    return mRef.getDownloadUrl();
+                }
+            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                @Override
+                public void onComplete(@NonNull Task<Uri> task) {
+                    product.setFourthImagePath(task.getResult().toString());
+                    databaseReference.child(id).setValue(product);
+                }
+            });
+        }
+        if (img_5 != null) {
+            final StorageReference mRef = storageRef.child(java.util.UUID.randomUUID() + "img");
+            uploadTask = mRef.putBytes(img_5);
+            task = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                @Override
+                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                    return mRef.getDownloadUrl();
+                }
+            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                @Override
+                public void onComplete(@NonNull Task<Uri> task) {
+                    product.setFifthImagePath(task.getResult().toString());
+                    databaseReference.child(id).setValue(product);
+                }
+            });
+        }
+
+        //databaseReference.child(id).setValue(product);
+        return ADDED_SUCCESSFULLY;
     }
 
 
@@ -256,15 +389,15 @@ public class AddCategoryFragment extends Fragment {
     }
 
     private byte[] imageViewToByte(ImageView image) {
-        Bitmap bitmap = ((BitmapDrawable)image.getDrawable()).getBitmap();
+        Bitmap bitmap = ((BitmapDrawable) image.getDrawable()).getBitmap();
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         if (numImg == 0) {
             while (bitmap.getByteCount() > 500000) {
                 bitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth() / 2, bitmap.getHeight() / 2, false);
             }
         } else {
-            while (bitmap.getByteCount() > 1500000) {
-                bitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth() / 2, bitmap.getHeight() / 2, false);
+            while (bitmap.getByteCount() > 25000000) {
+                bitmap = Bitmap.createScaledBitmap(bitmap, (int) (bitmap.getWidth() / 1.1), (int) (bitmap.getHeight() / 1.1), false);
             }
         }
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
@@ -275,12 +408,13 @@ public class AddCategoryFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        ((AppCompatActivity)getActivity()).getSupportActionBar().hide();
+        ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
     }
+
     @Override
     public void onStop() {
         super.onStop();
-        ((AppCompatActivity)getActivity()).getSupportActionBar().show();
+        ((AppCompatActivity) getActivity()).getSupportActionBar().show();
     }
 
 }

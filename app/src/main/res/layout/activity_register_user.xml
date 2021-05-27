@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
-
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -22,20 +20,61 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="16dp"
-                android:text="Авторизація"
+                android:text="Реєстрація"
                 android:textColor="@color/black"
                 android:textSize="20sp" />
 
         </LinearLayout>
 
         <TextView
+            android:id="@+id/banner_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="150dp"
             android:fontFamily="sans-serif-condensed"
-            android:paddingTop="150dp"
             android:paddingBottom="16dp"
             android:text="Stylish Clothes"
             android:textSize="32sp" />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="10dp"
+            android:weightSum="1">
+
+            <EditText
+                android:id="@+id/full_name_edit_text"
+                android:layout_width="0dp"
+                android:layout_height="30dp"
+                android:layout_weight=".75"
+                android:background="@drawable/custom_edit_text"
+                android:hint="Повне ім'я"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="10dp"
+            android:weightSum="1">
+
+            <EditText
+                android:id="@+id/age_edit_text"
+                android:layout_width="0dp"
+                android:layout_height="30dp"
+                android:layout_weight=".75"
+                android:background="@drawable/custom_edit_text"
+                android:hint="Вік"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp" />
+
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="fill_parent"
@@ -51,7 +90,7 @@
                 android:layout_height="30dp"
                 android:layout_weight=".75"
                 android:background="@drawable/custom_edit_text"
-                android:hint="Email Address"
+                android:hint="Email"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp" />
 
@@ -79,38 +118,13 @@
         </LinearLayout>
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/sign_in_button"
+            android:id="@+id/register_button"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="ВХІД"
             android:background="@drawable/button_style"
-            android:textColor="@color/black" />
-
-
-        <LinearLayout
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingTop="16dp">
+            android:text="РЕЄСТРАЦІЯ"
+            android:textColor="@color/black"/>
 
-            <TextView
-                android:id="@+id/forgot_password_text_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-condensed"
-                android:text="Забули пароль?"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/register_text_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-condensed"
-                android:paddingLeft="75dp"
-                android:text="Реєстрація"
-                android:textSize="16sp" />
-
-        </LinearLayout>
     </LinearLayout>
 
     <LinearLayout

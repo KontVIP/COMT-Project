@@ -8,6 +8,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,6 +27,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.stylishclothes.R;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -52,21 +55,14 @@ public class ProductAdapter extends ArrayAdapter<Product> {
         }
 
         final Product currentProduct = getItem(position);
-        //TextView
+        final String ProductId = currentProduct.getId();
+        //title textView
         TextView titleTextView = (TextView) listItemView.findViewById(R.id.title_text_view);
         titleTextView.setText(currentProduct.getTitle());
 
-        //ImageView
+        //Title imageView TODO
         ImageView imageView = (ImageView) listItemView.findViewById(R.id.title_image_view);
-        byte[] productImage = currentProduct.getImage();
-        try {
-            bitmap = BitmapFactory.decodeByteArray(productImage, 0, productImage.length);
-            imageView.setImageBitmap(bitmap);
-        } catch (Exception e) {
-            e.printStackTrace();
-            imageView.setImageResource(R.drawable.znak_voprosa);
-        }
-
+        Picasso.get().load(currentProduct.getTitleImagePath()).into(imageView);
 
 
         //LinearLayout
@@ -74,7 +70,7 @@ public class ProductAdapter extends ArrayAdapter<Product> {
         listProductItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setTitleOfOneProductActivity(currentProduct);
+                intentOneProductActivity(currentProduct);
             }
         });
 
@@ -139,8 +135,9 @@ public class ProductAdapter extends ArrayAdapter<Product> {
         return listItemView;
     }
 
-    private void setTitleOfOneProductActivity(Product currentProduct) {
+    private void intentOneProductActivity(Product currentProduct) {
         Intent intent = new Intent(getContext(), OneProductActivity.class);
+        intent.putExtra("ProductId", currentProduct.getId());
         intent.putExtra("Title", currentProduct.getTitle());
         getContext().startActivity(intent);
     }
@@ -148,7 +145,7 @@ public class ProductAdapter extends ArrayAdapter<Product> {
     private void intentEditProductActivity(Product currentProduct) {
         Intent intent = new Intent(getContext(), EditProductActivity.class);
         intent.putExtra("Title", currentProduct.getTitle());
-        intent.putExtra("Image", currentProduct.getImage());
+        intent.putExtra("ProductId", currentProduct.getId());
         intent.putExtra("Intent", mIntent);
         getContext().startActivity(intent);
     }

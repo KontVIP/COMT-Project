@@ -2,7 +2,7 @@ package com.example.stylishclothes.catalog;
 
 import android.content.Intent;
 
-public class Category {
+public class    Category {
 
     private String mTitle;
     private int mImage;

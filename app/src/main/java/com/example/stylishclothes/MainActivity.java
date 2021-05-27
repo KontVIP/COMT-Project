@@ -6,18 +6,19 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.Html;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.example.stylishclothes.catalog.CatalogFragment;
-import com.example.stylishclothes.catalog.OneProductActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
 
     private Toolbar toolbar;
+
+    boolean doubleBackToExitPressedOnce = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,10 +80,30 @@ public class MainActivity extends AppCompatActivity {
                 }
             };
 
-    public void openProductActivity() {
-        Intent intent = new Intent(this, OneProductActivity.class);
-        startActivity(intent);
+
+
+    @Override
+    public void onBackPressed() {
+        if (doubleBackToExitPressedOnce) {
+            super.onBackPressed();
+            this.finishAffinity();
+            return;
+        }
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, "Натисніть НАЗАД ще раз для виходу", Toast.LENGTH_SHORT).show();
+
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                doubleBackToExitPressedOnce = false;
+            }
+        };
+        thread.start();
+
     }
-
-
 }

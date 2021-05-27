@@ -20,11 +20,17 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.stylishclothes.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -32,7 +38,6 @@ import java.io.IOException;
 public class EditProductActivity extends AppCompatActivity {
 
     String title, code, titleDescription, description, price, category;
-    byte[] imageFromCatalog;
     DBHelper DB = new DBHelper(this);
     Context context = this;
     Uri imageUri;
@@ -48,6 +53,11 @@ public class EditProductActivity extends AppCompatActivity {
     TextView titleTextView;
     Bitmap bitmap;
 
+    Product product;
+    String productId;
+    DatabaseReference databaseReference;
+
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,35 +66,38 @@ public class EditProductActivity extends AppCompatActivity {
         //get data from ProductAdapter
         Bundle arguments = getIntent().getExtras();
         if (arguments != null) {
+            productId = arguments.getString("ProductId");
             title = arguments.getString("Title");
-            imageFromCatalog = arguments.getByteArray("Image");
             intent = arguments.getParcelable("Intent");
         }
 
-        //Load data
-        Cursor result = DB.getProduct("SELECT * FROM Catalogs WHERE title = ?", title);
-        if (result.getCount() == 0) {
-            Toast.makeText(this, "No Catalogs Exist", Toast.LENGTH_SHORT).show();
-        } else {
-            result.moveToFirst();
-            category = result.getString(0);
-            img_title = result.getBlob(2);
-            img_1 = result.getBlob(3);
-            img_2 = result.getBlob(4);
-            img_3 = result.getBlob(5);
-            img_4 = result.getBlob(6);
-            img_5 = result.getBlob(7);
-            availability = result.getInt(8);
-            code = result.getString(9);
-            size_S = result.getInt(10);
-            size_M = result.getInt(11);
-            size_L = result.getInt(12);
-            size_XL = result.getInt(13);
-            size_XXL = result.getInt(14);
-            titleDescription = result.getString(15);
-            description = result.getString(16);
-            price = result.getString(17);
-        }
+
+
+
+        //firebase
+        databaseReference = FirebaseDatabase.getInstance().getReference("Product");
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                product = snapshot.child(productId).getValue(Product.class);
+
+                setRadioButtons();
+                setAvailable();
+                setPrice();
+                setDescription();
+                setProductCode();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+
+
+
+
 
         //Title
         titleTextView = (TextView) findViewById(R.id.title_text_view);
@@ -241,43 +254,32 @@ public class EditProductActivity extends AppCompatActivity {
             }
         });
 
-        //Done editing
+        //Done editing TODO
         FloatingActionButton floatingDoneButton = (FloatingActionButton) findViewById(R.id.floating_done_button);
         floatingDoneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                try {
-                    if (titleEditText.getText().toString().length() == 0)
-                        Toast.makeText(context, "Product Not Edited", Toast.LENGTH_SHORT).show();
-                    else {
-                        DB.updateCatalog(title,
-                                categorySpinner.getSelectedItem().toString(),
-                                titleEditText.getText().toString(),
-                                img_title,
-                                img_1,
-                                img_2,
-                                img_3,
-                                img_4,
-                                img_5,
-                                rYes.isChecked(),
-                                productCodeEditText.getText().toString(),
-                                sizeCheckBox_S.isChecked(),
-                                sizeCheckBox_M.isChecked(),
-                                sizeCheckBox_L.isChecked(),
-                                sizeCheckBox_XL.isChecked(),
-                                sizeCheckBox_XXL.isChecked(),
-                                titleDescriptionEditText.getText().toString(),
-                                descriptionEditText.getText().toString(),
-                                priceEditText.getText().toString());
-                        Toast.makeText(context, "Product Edited", Toast.LENGTH_SHORT).show();
-                    }
-//                } catch (Exception e) {
-//                    Toast.makeText(context, "Product Not Edited", Toast.LENGTH_SHORT).show();
-//                    e.printStackTrace();
-//                }
+
+
+
                 startActivity(intent);
             }
         });
+    }
+
+    private void setProductCode() {
+    }
+
+    private void setDescription() {
+    }
+
+    private void setPrice() {
+    }
+
+    private void setAvailable() {
+    }
+
+    private void setRadioButtons() {
     }
 
     @Override

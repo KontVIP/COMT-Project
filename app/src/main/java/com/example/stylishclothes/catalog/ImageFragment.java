@@ -17,6 +17,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.example.stylishclothes.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.squareup.picasso.Picasso;
 
 public class ImageFragment extends Fragment {
 
@@ -29,7 +30,7 @@ public class ImageFragment extends Fragment {
 
         //Get data from ViewPagerAdapter
         Bundle bundle = this.getArguments();
-        byte[] img = bundle.getByteArray("image");
+        String img = bundle.getString("Image");
 
         //"Back action"
         OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
@@ -43,8 +44,7 @@ public class ImageFragment extends Fragment {
 
         //TouchImageView
         touchImageView = (TouchImageView) rootView.findViewById(R.id.touch_image);
-        Bitmap bitmap = BitmapFactory.decodeByteArray(img, 0, img.length);
-        touchImageView.setImageBitmap(bitmap);
+        Picasso.get().load(img).into(touchImageView);
 
         //Floating close button
         FloatingActionButton closeButton = (FloatingActionButton) rootView.findViewById(R.id.floating_close_button);
