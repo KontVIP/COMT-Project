@@ -51,7 +51,6 @@ import static android.app.Activity.RESULT_OK;
 
 public class AddProductFragment extends Fragment {
 
-    DBHelper DB;
     private ImageView image;
     private static final int PICK_IMAGE = 1;
     Uri imageUri;
@@ -62,6 +61,7 @@ public class AddProductFragment extends Fragment {
     CheckBox size_S, size_M, size_L, size_XL, size_XXL;
     int numImg;
     final int ADDED_SUCCESSFULLY = 1;
+    String selectedSpinnerItem;
 
     Product product;
 
@@ -195,6 +195,7 @@ public class AddProductFragment extends Fragment {
         categorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                selectedSpinnerItem = categorySpinner.getSelectedItem().toString();
             }
 
             @Override
@@ -225,7 +226,9 @@ public class AddProductFragment extends Fragment {
         String description = descriptionEditText.getText().toString();
         String price = priceEditText.getText().toString().trim();
         String code = productCodeEditText.getText().toString().trim();
+        String category = selectedSpinnerItem;
 
+        product.setCategory(category);
         product.setAvailable(rYes.isChecked());
         product.setId(id);
         product.setTitle(title);

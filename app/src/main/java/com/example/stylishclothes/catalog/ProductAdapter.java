@@ -27,15 +27,22 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.stylishclothes.R;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
 public class ProductAdapter extends ArrayAdapter<Product> {
 
-    DBHelper DB = new DBHelper(getContext());
-    Intent mIntent;
-    Bitmap bitmap;
+    private Intent mIntent;
+    private DatabaseReference databaseReference;
+    private StorageReference storageRef;
+    StorageReference photoRef;
 
     public ProductAdapter(Activity context, ArrayList<Product> products, Intent intent) {
         super(context, 0, products);
@@ -54,13 +61,17 @@ public class ProductAdapter extends ArrayAdapter<Product> {
                     false);
         }
 
+        //firebase
+        storageRef = FirebaseStorage.getInstance().getReference("ImageDB");
+        databaseReference = FirebaseDatabase.getInstance().getReference("Product");
+
         final Product currentProduct = getItem(position);
-        final String ProductId = currentProduct.getId();
+        final String productId = currentProduct.getId();
         //title textView
         TextView titleTextView = (TextView) listItemView.findViewById(R.id.title_text_view);
         titleTextView.setText(currentProduct.getTitle());
 
-        //Title imageView TODO
+        //Title imageView
         ImageView imageView = (ImageView) listItemView.findViewById(R.id.title_image_view);
         Picasso.get().load(currentProduct.getTitleImagePath()).into(imageView);
 
@@ -70,7 +81,12 @@ public class ProductAdapter extends ArrayAdapter<Product> {
         listProductItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                intentOneProductActivity(currentProduct);
+                if(!currentProduct.DELETED) {
+                    intentOneProductActivity(currentProduct);
+                } else {
+                    Toast.makeText(getContext(), "Product deleted! Refresh a page!", Toast.LENGTH_SHORT).show();
+                }
+
             }
         });
 
@@ -89,12 +105,11 @@ public class ProductAdapter extends ArrayAdapter<Product> {
                         switch (id)
                         {
                             case R.id.item_settings:
-                                //TODO
-                                Toast.makeText(getContext(), "Edited", Toast.LENGTH_SHORT).show();
-                                intentEditProductActivity(currentProduct);
-//                                AppCompatActivity activity = (AppCompatActivity) v.getContext();
-//                                AddCategoryFragment fragment = new AddCategoryFragment();
-//                                activity.getSupportFragmentManager().beginTransaction().replace(R.id.trousers_fragment_container, fragment).commit();
+                                if(!currentProduct.DELETED) {
+                                    intentEditProductActivity(currentProduct);
+                                } else {
+                                    Toast.makeText(getContext(), "Product deleted! Refresh a page!", Toast.LENGTH_SHORT).show();
+                                }
                                 break;
 
                             case R.id.delete_item:
@@ -106,8 +121,69 @@ public class ProductAdapter extends ArrayAdapter<Product> {
                                         "Yes",
                                         new DialogInterface.OnClickListener() {
                                             public void onClick(DialogInterface dialog, int id) {
-                                                Toast.makeText(getContext(), "Deleted", Toast.LENGTH_SHORT).show();
-                                                DB.deleteCatalog(currentProduct.getTitle().toString());
+                                                currentProduct.markDeleted();
+                                                try {
+                                                    Toast.makeText(getContext(), "Deleted", Toast.LENGTH_SHORT).show();
+                                                    photoRef = FirebaseStorage.getInstance().getReferenceFromUrl(currentProduct.getTitleImagePath());
+                                                    photoRef.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                        @Override
+                                                        public void onComplete(@NonNull Task<Void> task) {
+                                                            try{
+                                                                photoRef = FirebaseStorage.getInstance().getReferenceFromUrl(currentProduct.getFirstImagePath());
+                                                                photoRef.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                    @Override
+                                                                    public void onComplete(@NonNull Task<Void> task) {
+                                                                        try {
+                                                                            photoRef = FirebaseStorage.getInstance().getReferenceFromUrl(currentProduct.getSecondImagePath());
+                                                                            photoRef.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                                @Override
+                                                                                public void onComplete(@NonNull Task<Void> task) {
+                                                                                    try {
+                                                                                        photoRef = FirebaseStorage.getInstance().getReferenceFromUrl(currentProduct.getThirdImagePath());
+                                                                                        photoRef.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                                            @Override
+                                                                                            public void onComplete(@NonNull Task<Void> task) {
+                                                                                                try {
+                                                                                                    photoRef = FirebaseStorage.getInstance().getReferenceFromUrl(currentProduct.getFourthImagePath());
+                                                                                                    photoRef.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                                                        @Override
+                                                                                                        public void onComplete(@NonNull Task<Void> task) {
+                                                                                                            try {
+                                                                                                                photoRef = FirebaseStorage.getInstance().getReferenceFromUrl(currentProduct.getFifthImagePath());
+                                                                                                                photoRef.delete();
+                                                                                                            } catch (Exception e) {
+                                                                                                                e.printStackTrace();
+                                                                                                            }
+                                                                                                        }
+                                                                                                    });
+                                                                                                } catch (Exception e) {
+
+                                                                                                }
+                                                                                            }
+                                                                                        });
+                                                                                    } catch (Exception e) {
+                                                                                        e.printStackTrace();
+                                                                                    }
+                                                                                }
+                                                                            });
+                                                                        } catch (Exception e) {
+                                                                            e.printStackTrace();
+                                                                        }
+                                                                    }
+                                                                });
+                                                            } catch (Exception e) {
+
+                                                            }
+                                                        }
+                                                    });
+                                                    //next lines provoke crash and then executes catch (It's necessarily)
+                                                    photoRef = FirebaseStorage.getInstance().getReferenceFromUrl(currentProduct.getFifthImagePath());
+                                                    photoRef.delete();
+                                                } catch (Exception e) {
+                                                    e.printStackTrace();
+
+                                                }
+                                                databaseReference.child(productId).setValue(null);
                                             }
                                         });
 

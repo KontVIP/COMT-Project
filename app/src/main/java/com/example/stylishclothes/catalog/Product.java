@@ -4,8 +4,10 @@ import android.net.Uri;
 
 public class Product {
 
-    private String id, title, titleDescription, description, price, productCode, titleImagePath, firstImagePath, secondImagePath, thirdImagePath, fourthImagePath, fifthImagePath;
+    private String id, title, titleDescription, description, price, productCode, titleImagePath,
+            firstImagePath, secondImagePath, thirdImagePath, fourthImagePath, fifthImagePath, category;
     private boolean size_S, size_M, size_L, size_XL, size_XXL, available;
+     public boolean DELETED = false;
 
     public Product() {
     }
@@ -14,27 +16,31 @@ public class Product {
         return available;
     }
 
+    public String getCategory() {
+        return category;
+    }
+
     public String getProductCode() {
         return productCode;
     }
 
-    public boolean isCheckedSizeS() {
-        return size_S;
+    public boolean isSize_S() {
+        return this.size_S;
     }
 
-    public boolean isCheckedSizeM() {
+    public boolean isSize_M() {
         return size_M;
     }
 
-    public boolean isCheckedSizeL() {
+    public boolean isSize_L() {
         return size_L;
     }
 
-    public boolean isCheckedSizeXL() {
+    public boolean isSize_XL() {
         return size_XL;
     }
 
-    public boolean isCheckedSizeXXL() {
+    public boolean isSize_XXL() {
         return size_XXL;
     }
 
@@ -114,6 +120,10 @@ public class Product {
         this.id = id;
     }
 
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
     public void setTitleDescription(String titleDescription) {
         this.titleDescription = titleDescription;
     }
@@ -127,23 +137,23 @@ public class Product {
     }
 
     public void setSizeS(boolean size) {
-       size_S = size;
+       this.size_S = size;
     }
 
     public void setSizeM(boolean size) {
-        size_M = size;
+        this.size_M = size;
     }
 
     public void setSizeL(boolean size) {
-        size_L = size;
+        this.size_L = size;
     }
 
     public void setSizeXL(boolean size) {
-        size_XL = size;
+        this.size_XL = size;
     }
 
     public void setSizeXXL(boolean size) {
-        size_XXL = size;
+        this.size_XXL = size;
     }
 
     public void setProductCode(String code) {
@@ -153,4 +163,9 @@ public class Product {
     public void setAvailable(boolean available) {
         this.available = available;
     }
+
+    public void markDeleted() {
+        DELETED = true;
+    }
+
 }

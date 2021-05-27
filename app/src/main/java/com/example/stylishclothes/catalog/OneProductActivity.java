@@ -175,27 +175,27 @@ public class OneProductActivity extends OptionsMenuProductActivity {
 
     private void checkRadioButtons() {
         animRadiobutton(SRadiobutton);
-        if (!product.isCheckedSizeS()) {
+        if (!product.isSize_S()) {
             SRadiobutton.setVisibility(View.GONE);
         }
 
         animRadiobutton(MRadiobutton);
-        if (!product.isCheckedSizeM()) {
+        if (!product.isSize_M()) {
             MRadiobutton.setVisibility(View.GONE);
         }
 
         animRadiobutton(LRadiobutton);
-        if (!product.isCheckedSizeL()) {
+        if (!product.isSize_L()) {
             LRadiobutton.setVisibility(View.GONE);
         }
 
         animRadiobutton(XLRadiobutton);
-        if (!product.isCheckedSizeXL()) {
+        if (!product.isSize_XL()) {
             XLRadiobutton.setVisibility(View.GONE);
         }
 
         animRadiobutton(XXLRadiobutton);
-        if (!product.isCheckedSizeXXL()) {
+        if (!product.isSize_XXL()) {
             XXLRadiobutton.setVisibility(View.GONE);
         }
     }

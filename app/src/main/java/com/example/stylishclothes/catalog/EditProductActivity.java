@@ -9,6 +9,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -24,68 +25,85 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.stylishclothes.MainActivity;
 import com.example.stylishclothes.R;
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 public class EditProductActivity extends AppCompatActivity {
 
-    String title, code, titleDescription, description, price, category;
-    DBHelper DB = new DBHelper(this);
+    String title;
     Context context = this;
     Uri imageUri;
     private static final int PICK_IMAGE = 1;
-    Intent intent;
     ImageView image;
     EditText titleEditText, productCodeEditText, titleDescriptionEditText, descriptionEditText, priceEditText;
     FloatingActionButton fab_done;
     byte[] img_title, img_1, img_2, img_3, img_4, img_5;
     RadioButton rYes, rNo;
     CheckBox sizeCheckBox_S, sizeCheckBox_M, sizeCheckBox_L, sizeCheckBox_XL, sizeCheckBox_XXL;
-    int numImg, availability, size_S, size_M, size_L, size_XL, size_XXL;
+    int numImg;
     TextView titleTextView;
-    Bitmap bitmap;
+    Spinner categorySpinner;
+    String selectedSpinnerItem;
+
+    final int ADDED_SUCCESSFULLY = 1;
+    final byte[] IMAGE_NOT_EXIST = "1".getBytes();
 
     Product product;
     String productId;
     DatabaseReference databaseReference;
+    private StorageReference storageRef;
 
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_product);
-        
+
         //get data from ProductAdapter
         Bundle arguments = getIntent().getExtras();
         if (arguments != null) {
             productId = arguments.getString("ProductId");
             title = arguments.getString("Title");
-            intent = arguments.getParcelable("Intent");
         }
 
 
 
-
         //firebase
+        storageRef = FirebaseStorage.getInstance().getReference("ImageDB");
         databaseReference = FirebaseDatabase.getInstance().getReference("Product");
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 product = snapshot.child(productId).getValue(Product.class);
-
-                setRadioButtons();
-                setAvailable();
-                setPrice();
-                setDescription();
-                setProductCode();
+                //TODO
+                if (!product.DELETED) {
+                    checkNumImg();
+                    setImages(product.getTitleImagePath(), product.getFirstImagePath(), product.getSecondImagePath(), product.getThirdImagePath(), product.getFourthImagePath(), product.getFifthImagePath());
+                    setCheckBoxes(product.isSize_S(), product.isSize_M(), product.isSize_L(), product.isSize_XL(), product.isSize_XXL());
+                    setAvailable(product.isAvailable());
+                    setPrice(product.getPrice());
+                    setDescription(product.getTitleDescription(), product.getDescription());
+                    setProductCode(product.getProductCode());
+                    setCategorySpinner(product.getCategory());
+                } else {
+                    startActivity(new Intent(context, MainActivity.class));
+                }
             }
 
             @Override
@@ -105,60 +123,26 @@ public class EditProductActivity extends AppCompatActivity {
         titleEditText = (EditText) findViewById(R.id.title_edit_text);
         titleEditText.setText(title);
 
-        //Images
-        try {
-            image = (ImageView) findViewById(R.id.title_image);
-            bitmap = BitmapFactory.decodeByteArray(img_title, 0, img_title.length);
-            image.setImageBitmap(bitmap);
-            image = (ImageView) findViewById(R.id.first_image);
-            bitmap = BitmapFactory.decodeByteArray(img_1, 0, img_1.length);
-            image.setImageBitmap(bitmap);
-            image = (ImageView) findViewById(R.id.second_image);
-            bitmap = BitmapFactory.decodeByteArray(img_2, 0, img_2.length);
-            image.setImageBitmap(bitmap);
-            image = (ImageView) findViewById(R.id.third_image);
-            bitmap = BitmapFactory.decodeByteArray(img_3, 0, img_3.length);
-            image.setImageBitmap(bitmap);
-            image = (ImageView) findViewById(R.id.fourth_image);
-            bitmap = BitmapFactory.decodeByteArray(img_4, 0, img_4.length);
-            image.setImageBitmap(bitmap);
-            image = (ImageView) findViewById(R.id.fifth_image);
-            bitmap = BitmapFactory.decodeByteArray(img_5, 0, img_5.length);
-            image.setImageBitmap(bitmap);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
 
         //Price
         priceEditText = (EditText) findViewById(R.id.price_edit_text);
-        priceEditText.setText(price);
 
         //Check boxes
         sizeCheckBox_S = findViewById(R.id.size_S);
-        if(size_S == 1) sizeCheckBox_S.setChecked(true);
         sizeCheckBox_M = findViewById(R.id.size_M);
-        if(size_M == 1) sizeCheckBox_M.setChecked(true);
         sizeCheckBox_L = findViewById(R.id.size_L);
-        if(size_L == 1) sizeCheckBox_L.setChecked(true);
         sizeCheckBox_XL = findViewById(R.id.size_XL);
-        if(size_XL == 1) sizeCheckBox_XL.setChecked(true);
         sizeCheckBox_XXL = findViewById(R.id.size_XXL);
-        if(size_XXL == 1) sizeCheckBox_XXL.setChecked(true);
 
         //Radio buttons
         rYes = findViewById(R.id.available_yes);
-        if (availability == 1) rYes.setChecked(true);
 
         //Edit code
         productCodeEditText = (EditText) findViewById(R.id.product_code);
-        productCodeEditText.setText(code);
 
         //Descriptions
         descriptionEditText = findViewById(R.id.description_edit_text);
-        descriptionEditText.setText(description);
         titleDescriptionEditText = findViewById(R.id.title_description_edit_text);
-        titleDescriptionEditText.setText(titleDescription);
 
         //Upload title image
         Button uploadTitlePhotoButton = (Button) findViewById(R.id.upload_title_image_button);
@@ -235,18 +219,11 @@ public class EditProductActivity extends AppCompatActivity {
         });
 
         //Category spinner
-        Spinner categorySpinner = findViewById(R.id.category_spinner);
-        switch (category){
-            case "Штани":
-                categorySpinner.setSelection(0);
-                break;
-            case "Толстовки":
-                categorySpinner.setSelection(1);
-        }
+        categorySpinner = findViewById(R.id.category_spinner);
         categorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String selectedSpinnerItem = categorySpinner.getSelectedItem().toString();
+                selectedSpinnerItem = categorySpinner.getSelectedItem().toString();
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
@@ -254,32 +231,268 @@ public class EditProductActivity extends AppCompatActivity {
             }
         });
 
-        //Done editing TODO
+        //Done editing
         FloatingActionButton floatingDoneButton = (FloatingActionButton) findViewById(R.id.floating_done_button);
         floatingDoneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(addDataToDatabase() == ADDED_SUCCESSFULLY) {
+                    finish();
+                }
 
-
-
-                startActivity(intent);
             }
         });
     }
 
-    private void setProductCode() {
+    private void checkNumImg() {
+        try {
+            if(!(product.getFifthImagePath() == "")) {
+                img_5 = IMAGE_NOT_EXIST;
+                img_4 = IMAGE_NOT_EXIST;
+                img_3 = IMAGE_NOT_EXIST;
+                img_2 = IMAGE_NOT_EXIST;
+                img_1 = IMAGE_NOT_EXIST;
+            } else if(!(product.getFourthImagePath() == "")) {
+                img_4 = IMAGE_NOT_EXIST;
+                img_3 = IMAGE_NOT_EXIST;
+                img_2 = IMAGE_NOT_EXIST;
+                img_1 = IMAGE_NOT_EXIST;
+            } else if(!(product.getThirdImagePath() == "")) {
+                img_3 = IMAGE_NOT_EXIST;
+                img_2 = IMAGE_NOT_EXIST;
+                img_1 = IMAGE_NOT_EXIST;
+            } else if(!(product.getSecondImagePath() == "")) {
+                img_2 = IMAGE_NOT_EXIST;
+                img_1 = IMAGE_NOT_EXIST;
+            } else if(!(product.getFirstImagePath() == "")) {
+                img_1 = IMAGE_NOT_EXIST;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    private void setDescription() {
+    private int addDataToDatabase() {
+        String title = titleEditText.getText().toString().trim();
+        String titleDescription = titleDescriptionEditText.getText().toString();
+        String description = descriptionEditText.getText().toString();
+        String price = priceEditText.getText().toString().trim();
+        String code = productCodeEditText.getText().toString().trim();
+        String category = selectedSpinnerItem;
+
+        product.setCategory(category);
+        product.setAvailable(rYes.isChecked());
+        product.setTitle(title);
+        product.setTitleDescription(titleDescription);
+        product.setDescription(description);
+        product.setPrice(price);
+        product.setProductCode(code);
+        product.setSizeS(sizeCheckBox_S.isChecked());
+        product.setSizeM(sizeCheckBox_M.isChecked());
+        product.setSizeL(sizeCheckBox_L.isChecked());
+        product.setSizeXL(sizeCheckBox_XL.isChecked());
+        product.setSizeXXL(sizeCheckBox_XXL.isChecked());
+
+        UploadTask uploadTask;
+        Task<Uri> task;
+        if (img_title != null) {
+            try {
+                storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(product.getTitleImagePath());
+                storageRef.delete();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            final StorageReference mRef = FirebaseStorage.getInstance().getReference("ImageDB").child(java.util.UUID.randomUUID() + "_0_" + product.getTitle());
+            uploadTask = mRef.putBytes(img_title);
+            task = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                @Override
+                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                    return mRef.getDownloadUrl();
+                }
+            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                @Override
+                public void onComplete(@NonNull Task<Uri> task) {
+                    product.setTitleImagePath(task.getResult().toString());
+                    databaseReference.child(productId).setValue(product);
+                }
+            });
+        }
+        if (img_1 != null && img_1 != IMAGE_NOT_EXIST) {
+            try {
+                storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(product.getFirstImagePath());
+                storageRef.delete();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            final StorageReference mRef = FirebaseStorage.getInstance().getReference("ImageDB").child(java.util.UUID.randomUUID() +"_1_" + product.getTitle());
+            uploadTask = mRef.putBytes(img_1);
+            task = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                @Override
+                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                    return mRef.getDownloadUrl();
+                }
+            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                @Override
+                public void onComplete(@NonNull Task<Uri> task) {
+                    product.setFirstImagePath(task.getResult().toString());
+                    databaseReference.child(productId).setValue(product);
+                }
+            });
+        }
+        if (img_2 != null && img_2 != IMAGE_NOT_EXIST) {
+            try {
+                storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(product.getSecondImagePath());
+                storageRef.delete();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            final StorageReference mRef = FirebaseStorage.getInstance().getReference("ImageDB").child(java.util.UUID.randomUUID() + "_2_" + product.getTitle());
+            uploadTask = mRef.putBytes(img_2);
+            task = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                @Override
+                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                    return mRef.getDownloadUrl();
+                }
+            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                @Override
+                public void onComplete(@NonNull Task<Uri> task) {
+                    product.setSecondImagePath(task.getResult().toString());
+                    databaseReference.child(productId).setValue(product);
+                }
+            });
+        }
+        if (img_3 != null && img_3 != IMAGE_NOT_EXIST) {
+            try {
+                storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(product.getThirdImagePath());
+                storageRef.delete();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            final StorageReference mRef = FirebaseStorage.getInstance().getReference("ImageDB").child(java.util.UUID.randomUUID() + "_3_" + product.getTitle());
+            uploadTask = mRef.putBytes(img_3);
+            task = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                @Override
+                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                    return mRef.getDownloadUrl();
+                }
+            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                @Override
+                public void onComplete(@NonNull Task<Uri> task) {
+                    product.setThirdImagePath(task.getResult().toString());
+                    databaseReference.child(productId).setValue(product);
+                }
+            });
+        }
+        if (img_4 != null && img_4 != IMAGE_NOT_EXIST) {
+            try {
+                storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(product.getFourthImagePath());
+                storageRef.delete();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            final StorageReference mRef = FirebaseStorage.getInstance().getReference("ImageDB").child(java.util.UUID.randomUUID() + "_4_" + product.getTitle());
+            uploadTask = mRef.putBytes(img_4);
+            task = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                @Override
+                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                    return mRef.getDownloadUrl();
+                }
+            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                @Override
+                public void onComplete(@NonNull Task<Uri> task) {
+                    product.setFourthImagePath(task.getResult().toString());
+                    databaseReference.child(productId).setValue(product);
+                }
+            });
+        }
+        if (img_5 != null && img_5 != IMAGE_NOT_EXIST) {
+            try {
+                storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(product.getFifthImagePath());
+                storageRef.delete();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            final StorageReference mRef = FirebaseStorage.getInstance().getReference("ImageDB").child(java.util.UUID.randomUUID() + "_5_" + product.getTitle());
+            uploadTask = mRef.putBytes(img_5);
+            task = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                @Override
+                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                    return mRef.getDownloadUrl();
+                }
+            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                @Override
+                public void onComplete(@NonNull Task<Uri> task) {
+                    product.setFifthImagePath(task.getResult().toString());
+                    databaseReference.child(productId).setValue(product);
+                }
+            });
+        }
+
+        //databaseReference.child(id).setValue(product);
+        return ADDED_SUCCESSFULLY;
     }
 
-    private void setPrice() {
+
+    private void setImages(String TitleImg, String FirstImg, String SecondImg, String ThirdImg, String FourthImg, String FifthImg) {
+        image = (ImageView) findViewById(R.id.title_image);
+        Picasso.get().load(TitleImg).into(image);
+        image = (ImageView) findViewById(R.id.first_image);
+        Picasso.get().load(FirstImg).into(image);
+        image = (ImageView) findViewById(R.id.second_image);
+        Picasso.get().load(SecondImg).into(image);
+        image = (ImageView) findViewById(R.id.third_image);
+        Picasso.get().load(ThirdImg).into(image);
+        image = (ImageView) findViewById(R.id.fourth_image);
+        Picasso.get().load(FourthImg).into(image);
+        image = (ImageView) findViewById(R.id.fifth_image);
+        Picasso.get().load(FifthImg).into(image);
     }
 
-    private void setAvailable() {
+    private void setCategorySpinner(String category) {
+        switch (category){
+            case "Штани":
+                categorySpinner.setSelection(0);
+                break;
+            case "Толстовки":
+                categorySpinner.setSelection(1);
+        }
     }
 
-    private void setRadioButtons() {
+    private void setProductCode(String productCode) {
+        productCodeEditText.setText(productCode);
+    }
+
+    private void setDescription(String titleDescription, String description) {
+        titleDescriptionEditText.setText(titleDescription);
+        descriptionEditText.setText(description);
+    }
+
+    private void setPrice(String price) {
+        priceEditText.setText(price);
+    }
+
+    private void setAvailable(boolean available) {
+        if (available) {
+            rYes.setChecked(true);
+        }
+    }
+
+    private void setCheckBoxes(boolean isCheckedS, boolean isCheckedM, boolean isCheckedL, boolean isCheckedXL, boolean isCheckedXXL) {
+        if(isCheckedS) {
+            sizeCheckBox_S.setChecked(true);
+        }
+        if(isCheckedM) {
+            sizeCheckBox_M.setChecked(true);
+        }
+        if(isCheckedL) {
+            sizeCheckBox_L.setChecked(true);
+        }
+        if(isCheckedXL) {
+            sizeCheckBox_XL.setChecked(true);
+        }
+        if(isCheckedXXL) {
+            sizeCheckBox_XXL.setChecked(true);
+        }
     }
 
     @Override
@@ -288,7 +501,7 @@ public class EditProductActivity extends AppCompatActivity {
         if (requestCode == PICK_IMAGE && resultCode == RESULT_OK) {
             imageUri = data.getData();
             try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), imageUri);
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getApplicationContext().getContentResolver(), imageUri);
                 image.setImageBitmap(bitmap);
                 switch (numImg) {
                     case 0:
@@ -310,7 +523,7 @@ public class EditProductActivity extends AppCompatActivity {
                         img_5 = imageViewToByte(image);
                         break;
                 }
-                while (bitmap.getByteCount() > 1500000) {
+                while (bitmap.getByteCount() > 500000) {
                     bitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth() / 2, bitmap.getHeight() / 2, false);
                 }
                 image.setImageBitmap(bitmap);
