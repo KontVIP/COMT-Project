@@ -3,7 +3,7 @@
     <item android:drawable="@color/logo_color"/>
     <item>
         <bitmap
-            android:src="@drawable/facebook_cover_photo_2"
-            android:gravity="center"/>
+            android:src="@drawable/logo_sp"
+            />
     </item>
 </layer-list>

@@ -5,9 +5,9 @@
     <item
         android:state_pressed="true"
         android:state_enabled="true"
-        android:drawable="@drawable/button_pressed" />
+        android:drawable="@drawable/button_bg" />
 
     <item
         android:state_enabled="true"
-        android:drawable="@drawable/button_gradient" />
+        android:drawable="@drawable/button_bg_2" />
 </selector>

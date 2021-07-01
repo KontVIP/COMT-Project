@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -15,6 +16,8 @@ import androidx.fragment.app.Fragment;
 
 import com.example.stylishclothes.auth.AuthActivity;
 import com.example.stylishclothes.auth.User;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -22,8 +25,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
-import io.paperdb.Paper;
 
 public class MenuFragment extends Fragment implements View.OnClickListener {
 
@@ -31,12 +34,21 @@ public class MenuFragment extends Fragment implements View.OnClickListener {
     DatabaseReference reference;
     private TextView signOutTextView, fullNameTextView, emailTextView;
     private String userID;
+    private FirebaseAuth firebaseAuth;
+    private ImageView avatarImageView;
+
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         getActivity().setTitle("Stylish Clothes");
         View rootView = inflater.inflate(R.layout.fragment_menu, container, false);
+
+        //Firebase
+        firebaseAuth = FirebaseAuth.getInstance();
+
+
+        avatarImageView = (ImageView) rootView.findViewById(R.id.avatar_image_view);
 
         signOutTextView = (TextView) rootView.findViewById(R.id.sign_out_text_view);
         signOutTextView.setOnClickListener(this);
@@ -56,13 +68,18 @@ public class MenuFragment extends Fragment implements View.OnClickListener {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 User userProfile = snapshot.getValue(User.class);
 
-                if(userProfile != null) {
-                    String fullName = userProfile.fullName;
-                    String email = userProfile.email;
 
-                    fullNameTextView.setText(fullName);
-                    emailTextView.setText(email);
+                String fullName = userProfile.fullName;
+                String email = userProfile.email;
+                fullNameTextView.setText(fullName);
+                emailTextView.setText(email);
+                try {
+                    Picasso.get().load(userProfile.profilePhotoPath).into(avatarImageView);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
+
+
             }
 
             @Override
@@ -78,8 +95,9 @@ public class MenuFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.sign_out_text_view:
-                Paper.book().destroy();
-                FirebaseAuth.getInstance().signOut();
+                GoogleSignIn.getClient(getContext(), new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).build())
+                        .signOut();
+                firebaseAuth.signOut();
                 startActivity(new Intent(getActivity(), AuthActivity.class));
                 break;
             case R.id.full_name_text_view:

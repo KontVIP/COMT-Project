@@ -12,6 +12,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -43,10 +44,12 @@ import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class EditProductActivity extends AppCompatActivity {
 
-    String title;
+    String title, categoryName;
     Context context = this;
     Uri imageUri;
     private static final int PICK_IMAGE = 1;
@@ -60,6 +63,7 @@ public class EditProductActivity extends AppCompatActivity {
     TextView titleTextView;
     Spinner categorySpinner;
     String selectedSpinnerItem;
+    ArrayAdapter<String> spinnerAdapter;
 
     final int ADDED_SUCCESSFULLY = 1;
     final byte[] IMAGE_NOT_EXIST = "1".getBytes();
@@ -67,6 +71,7 @@ public class EditProductActivity extends AppCompatActivity {
     Product product;
     String productId;
     DatabaseReference databaseReference;
+    DatabaseReference categoryReference;
     private StorageReference storageRef;
 
 
@@ -80,18 +85,18 @@ public class EditProductActivity extends AppCompatActivity {
         if (arguments != null) {
             productId = arguments.getString("ProductId");
             title = arguments.getString("Title");
+            categoryName = arguments.getString("CategoryName");
         }
-
 
 
         //firebase
         storageRef = FirebaseStorage.getInstance().getReference("ImageDB");
-        databaseReference = FirebaseDatabase.getInstance().getReference("Product");
+        databaseReference = FirebaseDatabase.getInstance().getReference("Categories/" + categoryName + "/Products");
+        categoryReference = FirebaseDatabase.getInstance().getReference("Categories");
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 product = snapshot.child(productId).getValue(Product.class);
-                //TODO
                 if (!product.DELETED) {
                     checkNumImg();
                     setImages(product.getTitleImagePath(), product.getFirstImagePath(), product.getSecondImagePath(), product.getThirdImagePath(), product.getFourthImagePath(), product.getFifthImagePath());
@@ -100,7 +105,6 @@ public class EditProductActivity extends AppCompatActivity {
                     setPrice(product.getPrice());
                     setDescription(product.getTitleDescription(), product.getDescription());
                     setProductCode(product.getProductCode());
-                    setCategorySpinner(product.getCategory());
                 } else {
                     startActivity(new Intent(context, MainActivity.class));
                 }
@@ -111,10 +115,6 @@ public class EditProductActivity extends AppCompatActivity {
 
             }
         });
-
-
-
-
 
 
         //Title
@@ -220,23 +220,32 @@ public class EditProductActivity extends AppCompatActivity {
 
         //Category spinner
         categorySpinner = findViewById(R.id.category_spinner);
-        categorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        List<String> spinnerArray = new ArrayList<>();
+        categoryReference.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                selectedSpinnerItem = categorySpinner.getSelectedItem().toString();
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    Category category = dataSnapshot.getValue(Category.class);
+                    spinnerArray.add(category.title);
+                }
+                spinnerAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, spinnerArray);
+                categorySpinner.setAdapter(spinnerAdapter);
+                categorySpinner.setSelection(getIndex(categorySpinner, categoryName));
             }
+
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {
+            public void onCancelled(@NonNull DatabaseError error) {
 
             }
         });
+
 
         //Done editing
         FloatingActionButton floatingDoneButton = (FloatingActionButton) findViewById(R.id.floating_done_button);
         floatingDoneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(addDataToDatabase() == ADDED_SUCCESSFULLY) {
+                if (addDataToDatabase() == ADDED_SUCCESSFULLY) {
                     finish();
                 }
 
@@ -246,25 +255,25 @@ public class EditProductActivity extends AppCompatActivity {
 
     private void checkNumImg() {
         try {
-            if(!(product.getFifthImagePath() == "")) {
+            if (!(product.getFifthImagePath() == "")) {
                 img_5 = IMAGE_NOT_EXIST;
                 img_4 = IMAGE_NOT_EXIST;
                 img_3 = IMAGE_NOT_EXIST;
                 img_2 = IMAGE_NOT_EXIST;
                 img_1 = IMAGE_NOT_EXIST;
-            } else if(!(product.getFourthImagePath() == "")) {
+            } else if (!(product.getFourthImagePath() == "")) {
                 img_4 = IMAGE_NOT_EXIST;
                 img_3 = IMAGE_NOT_EXIST;
                 img_2 = IMAGE_NOT_EXIST;
                 img_1 = IMAGE_NOT_EXIST;
-            } else if(!(product.getThirdImagePath() == "")) {
+            } else if (!(product.getThirdImagePath() == "")) {
                 img_3 = IMAGE_NOT_EXIST;
                 img_2 = IMAGE_NOT_EXIST;
                 img_1 = IMAGE_NOT_EXIST;
-            } else if(!(product.getSecondImagePath() == "")) {
+            } else if (!(product.getSecondImagePath() == "")) {
                 img_2 = IMAGE_NOT_EXIST;
                 img_1 = IMAGE_NOT_EXIST;
-            } else if(!(product.getFirstImagePath() == "")) {
+            } else if (!(product.getFirstImagePath() == "")) {
                 img_1 = IMAGE_NOT_EXIST;
             }
         } catch (Exception e) {
@@ -278,7 +287,7 @@ public class EditProductActivity extends AppCompatActivity {
         String description = descriptionEditText.getText().toString();
         String price = priceEditText.getText().toString().trim();
         String code = productCodeEditText.getText().toString().trim();
-        String category = selectedSpinnerItem;
+        String category = categorySpinner.getSelectedItem().toString().trim();
 
         product.setCategory(category);
         product.setAvailable(rYes.isChecked());
@@ -324,7 +333,7 @@ public class EditProductActivity extends AppCompatActivity {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            final StorageReference mRef = FirebaseStorage.getInstance().getReference("ImageDB").child(java.util.UUID.randomUUID() +"_1_" + product.getTitle());
+            final StorageReference mRef = FirebaseStorage.getInstance().getReference("ImageDB").child(java.util.UUID.randomUUID() + "_1_" + product.getTitle());
             uploadTask = mRef.putBytes(img_1);
             task = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
                 @Override
@@ -428,34 +437,38 @@ public class EditProductActivity extends AppCompatActivity {
             });
         }
 
-        //databaseReference.child(id).setValue(product);
+        databaseReference.child(productId).setValue(product);
         return ADDED_SUCCESSFULLY;
     }
 
 
     private void setImages(String TitleImg, String FirstImg, String SecondImg, String ThirdImg, String FourthImg, String FifthImg) {
-        image = (ImageView) findViewById(R.id.title_image);
-        Picasso.get().load(TitleImg).into(image);
-        image = (ImageView) findViewById(R.id.first_image);
-        Picasso.get().load(FirstImg).into(image);
-        image = (ImageView) findViewById(R.id.second_image);
-        Picasso.get().load(SecondImg).into(image);
-        image = (ImageView) findViewById(R.id.third_image);
-        Picasso.get().load(ThirdImg).into(image);
-        image = (ImageView) findViewById(R.id.fourth_image);
-        Picasso.get().load(FourthImg).into(image);
-        image = (ImageView) findViewById(R.id.fifth_image);
-        Picasso.get().load(FifthImg).into(image);
-    }
-
-    private void setCategorySpinner(String category) {
-        switch (category){
-            case "Штани":
-                categorySpinner.setSelection(0);
-                break;
-            case "Толстовки":
-                categorySpinner.setSelection(1);
+        if (TitleImg != null && !TitleImg.equals("")) {
+            image = (ImageView) findViewById(R.id.title_image);
+            Picasso.get().load(TitleImg).into(image);
         }
+        if (FirstImg != null && !FirstImg.equals("")) {
+            image = (ImageView) findViewById(R.id.first_image);
+            Picasso.get().load(FirstImg).into(image);
+        }
+        if (SecondImg != null && !SecondImg.equals("")) {
+            image = (ImageView) findViewById(R.id.second_image);
+            Picasso.get().load(SecondImg).into(image);
+        }
+        if (ThirdImg != null && !ThirdImg.equals("")) {
+            image = (ImageView) findViewById(R.id.third_image);
+            Picasso.get().load(ThirdImg).into(image);
+        }
+        if (FourthImg != null && !FourthImg.equals("")) {
+            image = (ImageView) findViewById(R.id.fourth_image);
+            Picasso.get().load(FourthImg).into(image);
+        }
+        if (FifthImg != null && !FifthImg.equals("")) {
+            image = (ImageView) findViewById(R.id.fifth_image);
+            Picasso.get().load(FifthImg).into(image);
+        }
+
+
     }
 
     private void setProductCode(String productCode) {
@@ -478,21 +491,30 @@ public class EditProductActivity extends AppCompatActivity {
     }
 
     private void setCheckBoxes(boolean isCheckedS, boolean isCheckedM, boolean isCheckedL, boolean isCheckedXL, boolean isCheckedXXL) {
-        if(isCheckedS) {
+        if (isCheckedS) {
             sizeCheckBox_S.setChecked(true);
         }
-        if(isCheckedM) {
+        if (isCheckedM) {
             sizeCheckBox_M.setChecked(true);
         }
-        if(isCheckedL) {
+        if (isCheckedL) {
             sizeCheckBox_L.setChecked(true);
         }
-        if(isCheckedXL) {
+        if (isCheckedXL) {
             sizeCheckBox_XL.setChecked(true);
         }
-        if(isCheckedXXL) {
+        if (isCheckedXXL) {
             sizeCheckBox_XXL.setChecked(true);
         }
+    }
+
+    private int getIndex(Spinner spinner, String myString) {
+        for (int i = 0; i < spinner.getCount(); i++) {
+            if (spinner.getItemAtPosition(i).toString().equalsIgnoreCase(myString)) {
+                return i;
+            }
+        }
+        return 0;
     }
 
     @Override
@@ -541,7 +563,7 @@ public class EditProductActivity extends AppCompatActivity {
     }
 
     private byte[] imageViewToByte(ImageView image) {
-        Bitmap bitmap = ((BitmapDrawable)image.getDrawable()).getBitmap();
+        Bitmap bitmap = ((BitmapDrawable) image.getDrawable()).getBitmap();
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         if (numImg == 0) {
             while (bitmap.getByteCount() > 1500000) {

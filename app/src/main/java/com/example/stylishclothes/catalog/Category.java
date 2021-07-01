@@ -2,28 +2,18 @@ package com.example.stylishclothes.catalog;
 
 import android.content.Intent;
 
-public class    Category {
+public class Category {
 
-    private String mTitle;
-    private int mImage;
-    private Intent mIntent;
+    public String title;
+    public String imagePath = "";
 
-    public Category(String title, int image, Intent intent) {
-        mTitle = title;
-        mImage = image;
-        mIntent = intent;
+    public Category() {
+
     }
 
-
-    public String getTitle() {
-        return mTitle;
+    public Category(String title, String imagePath) {
+        this.title = title;
+        this.imagePath = imagePath;
     }
 
-    public int getImage() {
-        return mImage;
-    }
-
-    public Intent getIntent() {
-        return mIntent;
-    }
 }

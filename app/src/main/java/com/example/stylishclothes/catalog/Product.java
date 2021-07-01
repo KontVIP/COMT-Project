@@ -5,8 +5,8 @@ import android.net.Uri;
 public class Product {
 
     private String id, title, titleDescription, description, price, productCode, titleImagePath,
-            firstImagePath, secondImagePath, thirdImagePath, fourthImagePath, fifthImagePath, category;
-    private boolean size_S, size_M, size_L, size_XL, size_XXL, available;
+            firstImagePath = "", secondImagePath = "", thirdImagePath = "", fourthImagePath = "", fifthImagePath = "", category;
+    private boolean size_S = false, size_M = false, size_L = false, size_XL = false, size_XXL = false, available = false;
      public boolean DELETED = false;
 
     public Product() {

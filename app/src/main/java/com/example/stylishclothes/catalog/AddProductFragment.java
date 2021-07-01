@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -46,6 +47,8 @@ import com.google.firebase.storage.UploadTask;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -61,12 +64,14 @@ public class AddProductFragment extends Fragment {
     CheckBox size_S, size_M, size_L, size_XL, size_XXL;
     int numImg;
     final int ADDED_SUCCESSFULLY = 1;
-    String selectedSpinnerItem;
+    String selectedSpinnerItem, title;
+    ArrayAdapter<String> spinnerAdapter;
 
     Product product;
 
     FirebaseDatabase firebaseDatabase;
     DatabaseReference databaseReference;
+    DatabaseReference categoryReference;
     private StorageReference storageRef;
 
 
@@ -76,9 +81,14 @@ public class AddProductFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_add_category, container, false);
         getActivity().setTitle("Stylish Clothes");
 
-        //Database
+        //get data from ProductListActivity
+        Bundle bundle = this.getArguments();
+        title = bundle.getString("Title");
+
+        //Firebase
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference("Product");
+        categoryReference = firebaseDatabase.getReference("Categories");
         storageRef = FirebaseStorage.getInstance().getReference("ImageDB");
 
         product = new Product();
@@ -106,7 +116,7 @@ public class AddProductFragment extends Fragment {
         OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
             @Override
             public void handleOnBackPressed() {
-                Fragment fragment = getActivity().getSupportFragmentManager().findFragmentById(R.id.trousers_fragment_container);
+                Fragment fragment = getActivity().getSupportFragmentManager().findFragmentById(R.id.fragment_container);
                 getActivity().getSupportFragmentManager().beginTransaction().remove(fragment).commit();
             }
         };
@@ -192,6 +202,31 @@ public class AddProductFragment extends Fragment {
 
         //Category spinner
         Spinner categorySpinner = rootView.findViewById(R.id.category_spinner);
+        List<String> spinnerArray = new ArrayList<>();
+
+        categoryReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                try {
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        Category category = dataSnapshot.getValue(Category.class);
+                        spinnerArray.add(category.title);
+                    }
+                    spinnerAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, spinnerArray);
+                    categorySpinner.setAdapter(spinnerAdapter);
+                    categorySpinner.setSelection(getIndex(categorySpinner, title));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
         categorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -210,7 +245,7 @@ public class AddProductFragment extends Fragment {
             public void onClick(View v) {
                 if(addDataToDatabase() == ADDED_SUCCESSFULLY) {
                     Toast.makeText(getActivity(), "Data added!", Toast.LENGTH_SHORT).show();
-                    Fragment fragment = getActivity().getSupportFragmentManager().findFragmentById(R.id.trousers_fragment_container);
+                    Fragment fragment = getActivity().getSupportFragmentManager().findFragmentById(R.id.fragment_container);
                     getActivity().getSupportFragmentManager().beginTransaction().remove(fragment).commit();
                 }
             }
@@ -220,7 +255,8 @@ public class AddProductFragment extends Fragment {
     }
 
     private int addDataToDatabase() {
-        String id = databaseReference.push().getKey();
+        Long unixTime = System.currentTimeMillis();
+        String id = databaseReference.child(unixTime.toString()).getKey();
         String title = titleEditText.getText().toString().trim();
         String titleDescription = titleDescriptionEditText.getText().toString();
         String description = descriptionEditText.getText().toString();
@@ -256,7 +292,7 @@ public class AddProductFragment extends Fragment {
                 @Override
                 public void onComplete(@NonNull Task<Uri> task) {
                     product.setTitleImagePath(task.getResult().toString());
-                    databaseReference.child(id).setValue(product);
+                    firebaseDatabase.getReference("Categories/" + category + "/Products").child(id).setValue(product);
                 }
             });
         }
@@ -272,7 +308,7 @@ public class AddProductFragment extends Fragment {
                 @Override
                 public void onComplete(@NonNull Task<Uri> task) {
                     product.setFirstImagePath(task.getResult().toString());
-                    databaseReference.child(id).setValue(product);
+                    firebaseDatabase.getReference("Categories/" + category + "/Products").child(id).setValue(product);
                 }
             });
         }
@@ -288,7 +324,7 @@ public class AddProductFragment extends Fragment {
                 @Override
                 public void onComplete(@NonNull Task<Uri> task) {
                     product.setSecondImagePath(task.getResult().toString());
-                    databaseReference.child(id).setValue(product);
+                    firebaseDatabase.getReference("Categories/" + category + "/Products").child(id).setValue(product);
                 }
             });
         }
@@ -304,7 +340,7 @@ public class AddProductFragment extends Fragment {
                 @Override
                 public void onComplete(@NonNull Task<Uri> task) {
                     product.setThirdImagePath(task.getResult().toString());
-                    databaseReference.child(id).setValue(product);
+                    firebaseDatabase.getReference("Categories/" + category + "/Products").child(id).setValue(product);
                 }
             });
         }
@@ -320,7 +356,7 @@ public class AddProductFragment extends Fragment {
                 @Override
                 public void onComplete(@NonNull Task<Uri> task) {
                     product.setFourthImagePath(task.getResult().toString());
-                    databaseReference.child(id).setValue(product);
+                    firebaseDatabase.getReference("Categories/" + category + "/Products").child(id).setValue(product);
                 }
             });
         }
@@ -336,15 +372,21 @@ public class AddProductFragment extends Fragment {
                 @Override
                 public void onComplete(@NonNull Task<Uri> task) {
                     product.setFifthImagePath(task.getResult().toString());
-                    databaseReference.child(id).setValue(product);
+                    firebaseDatabase.getReference("Categories/" + category + "/Products").child(id).setValue(product);
                 }
             });
         }
-
-        //databaseReference.child(id).setValue(product);
         return ADDED_SUCCESSFULLY;
     }
 
+    private int getIndex(Spinner spinner, String myString){
+        for (int i=0;i<spinner.getCount();i++){
+            if (spinner.getItemAtPosition(i).toString().equalsIgnoreCase(myString)){
+                return i;
+            }
+        }
+        return 0;
+    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {

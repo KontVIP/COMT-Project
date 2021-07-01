@@ -9,16 +9,19 @@ import androidx.fragment.app.Fragment;
 import android.os.Bundle;
 import android.text.Html;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.stylishclothes.catalog.CatalogFragment;
+import com.github.ybq.android.spinkit.SpinKitView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
 
     private Toolbar toolbar;
-
-    boolean doubleBackToExitPressedOnce = false;
+    private boolean doubleBackToExitPressedOnce = false;
+    private ProgressBar checkInternetProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,9 +31,19 @@ public class MainActivity extends AppCompatActivity {
 
         //ToolBar
         toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle(Html.fromHtml("<font color=\"black\">" + "Stylish Clothes"));
 
+        //Progress Bar check Internet connection
+        checkInternetProgressBar = findViewById(R.id.check_internet_spin_kit);
+        checkInternetProgressBar.setVisibility(View.VISIBLE);
+        if (InternetConnection.checkConnection(this)) {
+            checkInternetProgressBar.setVisibility(View.GONE);
+        } else {
+            checkInternetProgressBar.setVisibility(View.GONE);
+            Toast.makeText(this, "No Internet connection!", Toast.LENGTH_SHORT).show();
+        }
+
+
+        setSupportActionBar(toolbar);
         //Fragments
         BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
         bottomNav.setOnNavigationItemSelectedListener(navListener);
@@ -44,7 +57,6 @@ public class MainActivity extends AppCompatActivity {
                 bottomNav.setSelectedItemId(R.id.nav_shopping_cart);
             }
         }
-
 
     }
 

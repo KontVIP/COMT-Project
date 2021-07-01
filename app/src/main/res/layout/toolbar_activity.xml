@@ -7,6 +7,16 @@
     android:id="@+id/toolbar"
     android:elevation="4dp"
     android:theme="@style/ToolbarTheme"
-    app:titleTextColor="@color/black">
+    app:titleTextColor="@color/black" >
+
+    <com.github.ybq.android.spinkit.SpinKitView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/check_internet_spin_kit"
+        style="@style/SpinKitView.Large.Circle"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_marginLeft="20dp"
+        app:SpinKit_Color="#2f4653"
+        android:visibility="gone" />
 
 </androidx.appcompat.widget.Toolbar>

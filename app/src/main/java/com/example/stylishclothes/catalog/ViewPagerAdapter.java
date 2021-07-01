@@ -61,11 +61,11 @@ class ViewPagerAdapter extends PagerAdapter {
     public int getCount() {
         // return the number of images
         int count = 0;
-        if (mImage_1 != null) count++;
-        if (mImage_2 != null) count++;
-        if (mImage_3 != null) count++;
-        if (mImage_4 != null) count++;
-        if (mImage_5 != null) count++;
+        if (!mImage_1.equals("")) count++;
+        if (!mImage_2.equals("")) count++;
+        if (!mImage_3.equals("")) count++;
+        if (!mImage_4.equals("")) count++;
+        if (!mImage_5.equals("")) count++;
         return count;
     }
 
@@ -107,6 +107,7 @@ class ViewPagerAdapter extends PagerAdapter {
             e.printStackTrace();
         }
 
+
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -115,7 +116,12 @@ class ViewPagerAdapter extends PagerAdapter {
                 ft.add(R.id.image_frame, fragment);
                 ft.setCustomAnimations(R.anim.alpha, 0, R.anim.anti_alpha, 0);
                 Bundle bundle = new Bundle();
-                bundle.putString("Image", currentImagePath);
+                bundle.putString("Image_1", mImage_1);
+                bundle.putString("Image_2", mImage_2);
+                bundle.putString("Image_3", mImage_3);
+                bundle.putString("Image_4", mImage_4);
+                bundle.putString("Image_5", mImage_5);
+                bundle.putInt("CurrentPosition", position);
                 fragment.setArguments(bundle);
                 ft.show(fragment);
                 ft.commit();

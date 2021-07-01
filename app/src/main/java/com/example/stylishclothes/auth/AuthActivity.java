@@ -1,41 +1,53 @@
 package com.example.stylishclothes.auth;
 
-import android.app.ActionBar;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
-import android.util.Patterns;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.viewpager.widget.ViewPager;
 
 import com.example.stylishclothes.MainActivity;
 import com.example.stylishclothes.R;
-import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.FirebaseDatabase;
 
-import io.paperdb.Paper;
+import java.net.URI;
+import java.net.URL;
+
 
 public class AuthActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private EditText emailEditText, passwordEditText;
-    private TextView registerTextView, forgotPasswordTextView;
-    private Button signInButton;
-    
-    private FirebaseAuth mAuth;
-    private ProgressBar progressBar;
-
     boolean doubleBackToExitPressedOnce = false;
+
+    private Context context = this;
+    TabLayout tabLayout;
+    public static ViewPager viewPager;
+    FloatingActionButton googleFab;
+    float v = 0;
+
+    private static final int RC_SIGN_IN = 100;
+    private GoogleSignInClient googleSignInClient;
+    private FirebaseAuth firebaseAuth;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -43,127 +55,37 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auth);
 
-        registerTextView = findViewById(R.id.register_text_view);
-        registerTextView.setOnClickListener(this);
+        //configure the Google SignIn
+        GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
 
-        emailEditText = (EditText) findViewById(R.id.email_edit_text);
-        passwordEditText = (EditText) findViewById(R.id.password_edit_text);
+        //Firebase
+        firebaseAuth = FirebaseAuth.getInstance();
 
-        signInButton = (Button) findViewById(R.id.sign_in_button);
-        signInButton.setOnClickListener(this);
 
-        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        tabLayout = findViewById(R.id.tab_layout);
+        viewPager = findViewById(R.id.view_pager);
+        googleFab = findViewById(R.id.fab_google);
 
-        mAuth = FirebaseAuth.getInstance();
+        tabLayout.addTab(tabLayout.newTab().setText("Вхід"));
+        tabLayout.addTab(tabLayout.newTab().setText("Реєстрація"));
+        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
-        forgotPasswordTextView = findViewById(R.id.forgot_password_text_view);
-        forgotPasswordTextView.setOnClickListener(this);
+        final LoginAdapter adapter = new LoginAdapter(getSupportFragmentManager(), this, tabLayout.getTabCount());
+        viewPager.setAdapter(adapter);
+        tabLayout.setupWithViewPager(viewPager);
 
-        Paper.init(this);
+        googleFab.setTranslationY(300);
+        tabLayout.setTranslationY(300);
 
-        String userEmailKey = Paper.book().read("Email");
-        String userPasswordKey = Paper.book().read("Password");
+        googleFab.setAlpha(v);
+        googleFab.animate().translationY(0).alpha(1000).setStartDelay(400).start();
+        tabLayout.animate().translationY(0).alpha(1000).setStartDelay(600).start();
 
-        if(userEmailKey != "" && userPasswordKey != "") {
-            if(!TextUtils.isEmpty(userEmailKey) && !TextUtils.isEmpty(userPasswordKey)) {
-                userLogin(userEmailKey, userPasswordKey);
-            }
-        }
-
-    }
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.register_text_view:
-                startActivity(new Intent(this, RegisterUserActivity.class));
-                break;
-            case R.id.sign_in_button:
-                userLogin();
-                Paper.book().write("Email", emailEditText.getText().toString().trim());
-                Paper.book().write("Password", passwordEditText.getText().toString().trim());
-                break;
-            case R.id.forgot_password_text_view:
-                startActivity(new Intent(this, ForgotPasswordActivity.class));
-                break;
-        }
-    }
-
-    private void userLogin() {
-        String email = emailEditText.getText().toString().trim();
-        String password = passwordEditText.getText().toString().trim();
-
-        if(email.isEmpty()) {
-            emailEditText.setError("Необхідний Email!");
-            emailEditText.requestFocus();
-            return;
-        }
-
-        if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            emailEditText.setError("Введіть коректний email!");
-            emailEditText.requestFocus();
-            return;
-        }
-
-        if(password.isEmpty()) {
-            passwordEditText.setError("Необхідний пароль!");
-            passwordEditText.requestFocus();
-            return;
-        }
-
-        progressBar.setVisibility(View.VISIBLE);
-
-        mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-
-                if(task.isSuccessful()) {
-                    startActivity(new Intent(AuthActivity.this, MainActivity.class));
-                    Toast.makeText(AuthActivity.this, "Вхід", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(AuthActivity.this, "Невірний логінь або пароль!", Toast.LENGTH_SHORT).show();
-                }
-                progressBar.setVisibility(View.GONE);
-            }
-        });
-
-    }
-
-    private void userLogin(String email, String password) {
-
-        if(email.isEmpty()) {
-            emailEditText.setError("Необхідний Email!");
-            emailEditText.requestFocus();
-            return;
-        }
-
-        if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            emailEditText.setError("Введіть коректний email!");
-            emailEditText.requestFocus();
-            return;
-        }
-
-        if(password.isEmpty()) {
-            passwordEditText.setError("Необхідний пароль!");
-            passwordEditText.requestFocus();
-            return;
-        }
-
-        progressBar.setVisibility(View.VISIBLE);
-
-        mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-
-                if(task.isSuccessful()) {
-                    startActivity(new Intent(AuthActivity.this, MainActivity.class));
-                    Toast.makeText(AuthActivity.this, "Вхід", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(AuthActivity.this, "Невірний логінь або пароль!", Toast.LENGTH_SHORT).show();
-                }
-                progressBar.setVisibility(View.GONE);
-            }
-        });
+        googleFab.setOnClickListener(this);
 
     }
 
@@ -193,6 +115,65 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.fab_google:
+                Intent intent = googleSignInClient.getSignInIntent();
+                startActivityForResult(intent, RC_SIGN_IN);
+                break;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RC_SIGN_IN) {
+            Task<GoogleSignInAccount> accountTask = GoogleSignIn.getSignedInAccountFromIntent(data);
+            try {
+                GoogleSignInAccount account = accountTask.getResult(ApiException.class);
+                firebaseAuthWithGoogleAccount(account);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+    private void firebaseAuthWithGoogleAccount(GoogleSignInAccount account) {
+        AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
+        firebaseAuth.signInWithCredential(credential).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+            @Override
+            public void onSuccess(AuthResult authResult) {
+                FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+                //get user info
+                String uid = firebaseUser.getUid();
+                String email = firebaseUser.getEmail();
+                String fullName = firebaseUser.getDisplayName();
+                String profilePhotoPath = firebaseUser.getPhotoUrl().toString();
+
+                User user = new User(fullName, "None", email, profilePhotoPath);
+                FirebaseDatabase.getInstance().getReference("Users").child(uid).setValue(user);
+
+                //check if user new or existing
+                if (authResult.getAdditionalUserInfo().isNewUser()) {
+                    Toast.makeText(AuthActivity.this, "Account Created...", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(AuthActivity.this, "Existing user...", Toast.LENGTH_SHORT).show();
+                }
+
+                startActivity(new Intent(context, MainActivity.class));
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+
+            }
+        });
+
+    }
 }
 
 

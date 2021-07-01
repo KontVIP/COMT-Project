@@ -80,9 +80,9 @@
 
                     <TextView
                         android:id="@+id/code_text_view"
-                        android:paddingLeft="4dp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:paddingLeft="4dp"
                         android:text="Код: 936431" />
 
                     <RatingBar
@@ -149,6 +149,7 @@
                         android:layout_height="wrap_content"
                         android:background="@drawable/radiobutton_background"
                         android:button="@android:color/transparent"
+                        android:foreground="?android:attr/selectableItemBackground"
                         android:gravity="center"
                         android:text="M"
                         android:textColor="@drawable/radiobutton_text"
@@ -160,6 +161,7 @@
                         android:layout_height="wrap_content"
                         android:background="@drawable/radiobutton_background"
                         android:button="@android:color/transparent"
+                        android:foreground="?android:attr/selectableItemBackground"
                         android:gravity="center"
                         android:text="L"
                         android:textColor="@drawable/radiobutton_text"
@@ -171,6 +173,7 @@
                         android:layout_height="wrap_content"
                         android:background="@drawable/radiobutton_background"
                         android:button="@android:color/transparent"
+                        android:foreground="?android:attr/selectableItemBackground"
                         android:gravity="center"
                         android:text="XL"
                         android:textColor="@drawable/radiobutton_text"
@@ -182,6 +185,7 @@
                         android:layout_height="wrap_content"
                         android:background="@drawable/radiobutton_background"
                         android:button="@android:color/transparent"
+                        android:foreground="?android:attr/selectableItemBackground"
                         android:gravity="center"
                         android:text="XXL"
                         android:textColor="@drawable/radiobutton_text"
@@ -225,98 +229,18 @@
 
             <!-- Other products -->
 
-            <HorizontalScrollView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:scrollbars="none">
+                android:background="@drawable/border"
+                android:orientation="vertical">
 
-                <LinearLayout
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler_view_recommended"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/border"
-                    android:orientation="horizontal">
+                    android:layout_height="match_parent" />
 
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="4dp"
-                        android:background="@drawable/border">
-
-                        <ImageView
-                            android:layout_width="100dp"
-                            android:layout_height="100dp"
-                            android:padding="1dp"
-                            android:src="@drawable/znak_voprosa" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="4dp"
-                        android:background="@drawable/border">
-
-                        <ImageView
-                            android:layout_width="100dp"
-                            android:layout_height="100dp"
-                            android:padding="1dp"
-                            android:src="@drawable/znak_voprosa" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="4dp"
-                        android:background="@drawable/border">
-
-                        <ImageView
-                            android:layout_width="100dp"
-                            android:layout_height="100dp"
-                            android:padding="1dp"
-                            android:src="@drawable/znak_voprosa" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="4dp"
-                        android:background="@drawable/border">
-
-                        <ImageView
-                            android:layout_width="100dp"
-                            android:layout_height="100dp"
-                            android:padding="1dp"
-                            android:src="@drawable/znak_voprosa" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="4dp"
-                        android:background="@drawable/border">
-
-                        <ImageView
-                            android:layout_width="100dp"
-                            android:layout_height="100dp"
-                            android:padding="1dp"
-                            android:src="@drawable/znak_voprosa" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="4dp"
-                        android:background="@drawable/border">
-
-                        <ImageView
-                            android:layout_width="100dp"
-                            android:layout_height="100dp"
-                            android:padding="1dp"
-                            android:src="@drawable/znak_voprosa" />
-                    </LinearLayout>
-
-                </LinearLayout>
-
-            </HorizontalScrollView>
+            </LinearLayout>
 
 
         </LinearLayout>
@@ -353,13 +277,17 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginRight="75dp"
-                app:srcCompat="@drawable/ic_baseline_shopping_cart_24" />
+                android:foreground="?android:attr/selectableItemBackground"
+                android:padding="10dp"
+                app:srcCompat="@drawable/ic_baseline_add_shopping_cart_24" />
 
             <ImageView
                 android:id="@+id/add_favorite_button"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                app:srcCompat="@drawable/ic_baseline_favorite_24" />
+                android:foreground="?android:attr/selectableItemBackground"
+                android:padding="10dp"
+                app:srcCompat="@drawable/ic_baseline_favorite_border_24" />
 
         </LinearLayout>
 
