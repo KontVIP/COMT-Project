@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
@@ -30,6 +31,8 @@ public class FavoritesFragment extends Fragment {
     ListView listView;
     ProductAdapter productAdapter;
     ArrayList<String> productIds;
+    int productQuantity = 0;
+    View heartImageLayout;
 
     @Nullable
     @Override
@@ -55,12 +58,17 @@ public class FavoritesFragment extends Fragment {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
                                 products.clear();
+                                productQuantity = 0;
                                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                                     for (int i = 0; i < productIds.size(); i++) {
                                         if (dataSnapshot.child("Products/" + productIds.get(i)).getValue(Product.class) != null) {
                                             products.add(dataSnapshot.child("Products/" + productIds.get(i)).getValue(Product.class));
                                         }
+                                        productQuantity++;
                                     }
+                                }
+                                if (productQuantity == 0) {
+                                    heartImageLayout.setVisibility(View.VISIBLE);
                                 }
                                 productAdapter.notifyDataSetChanged();
                             }
@@ -84,9 +92,10 @@ public class FavoritesFragment extends Fragment {
     }
 
     private void init(View rootView) {
+        heartImageLayout = rootView.findViewById(R.id.heat_image_layout);
         productIds = new ArrayList<>();
         products = new ArrayList<Product>();
-        productAdapter = new ProductAdapter(getActivity(), products, false);
+        productAdapter = new ProductAdapter(getActivity(), products, 1);
         listView = rootView.findViewById(R.id.product_list);
         listView.setAdapter(productAdapter);
     }

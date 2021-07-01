@@ -122,7 +122,7 @@ public class ProductListActivity extends OptionsMenuProductActivity {
 
                 }
                 listView = (ListView) findViewById(R.id.product_list);
-                productAdapter = new ProductAdapter(activity, products, true);
+                productAdapter = new ProductAdapter(activity, products, 0);
                 listView.setAdapter(productAdapter);
             }
 

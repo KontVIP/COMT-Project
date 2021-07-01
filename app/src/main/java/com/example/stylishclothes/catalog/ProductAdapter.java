@@ -46,13 +46,16 @@ public class ProductAdapter extends ArrayAdapter<Product> {
     private Intent mIntent;
     private DatabaseReference databaseReference;
     private StorageReference storageRef;
-    private Boolean extraSettings;
     StorageReference photoRef;
+    final int DEFAULT_PRODUCT = 0;
+    final int FAVORITE_PRODUCT = 1;
+    final int SHOPPING_CART_PRODUCT = 2;
+    int productType;
 
 
-    public ProductAdapter(Activity context, ArrayList<Product> products, Boolean extraSettings) {
+    public ProductAdapter(Activity context, ArrayList<Product> products, int productType) {
         super(context, 0, products);
-        this.extraSettings = extraSettings;
+        this.productType = productType;
     }
 
     @NonNull
@@ -99,9 +102,8 @@ public class ProductAdapter extends ArrayAdapter<Product> {
             }
         });
 
-        //Popup menu || if extraSettings == false => it's a favorite fragment
         ImageButton showMenu = (ImageButton) listItemView.findViewById(R.id.show_menu);
-        if (extraSettings) {
+        if (productType == DEFAULT_PRODUCT) {
             showMenu.setVisibility(View.VISIBLE);
             showMenu.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -260,8 +262,7 @@ public class ProductAdapter extends ArrayAdapter<Product> {
                     menu.show();
                 }
             });
-        } else {
-            //favorite fragment
+        } else if (productType == FAVORITE_PRODUCT) {
             showMenu.setVisibility(View.VISIBLE);
             showMenu.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -274,6 +275,29 @@ public class ProductAdapter extends ArrayAdapter<Product> {
                                 case R.id.delete_favorite_item:
                                     FirebaseDatabase.getInstance()
                                             .getReference("Users/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/Favorites/" + productId).removeValue();
+                                    Toast.makeText(getContext(), "Видалено!", Toast.LENGTH_SHORT).show();
+                                    break;
+                            }
+                            return true;
+                        }
+                    });
+                    menu.inflate(R.menu.favorite_product_popup_menu);
+                    menu.show();
+                }
+            });
+        } else if (productType == SHOPPING_CART_PRODUCT) {
+            showMenu.setVisibility(View.VISIBLE);
+            showMenu.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    PopupMenu menu = new PopupMenu(getContext(), showMenu);
+                    menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            switch (item.getItemId()) {
+                                case R.id.delete_favorite_item:
+                                    FirebaseDatabase.getInstance()
+                                            .getReference("Users/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/Shopping Cart/" + productId).removeValue();
                                     Toast.makeText(getContext(), "Видалено!", Toast.LENGTH_SHORT).show();
                                     break;
                             }
