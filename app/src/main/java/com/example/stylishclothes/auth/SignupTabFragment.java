@@ -30,7 +30,7 @@ public class SignupTabFragment extends Fragment implements View.OnClickListener 
     private TextView bannerTextView;
     private Button registerButton;
     private ProgressBar progressBar;
-    private EditText fullNameEditText, ageEditText, emailEditText, passwordEditText;
+    private EditText fullNameEditText, phoneEditText, emailEditText, passwordEditText;
     
     @Nullable
     @Override
@@ -42,7 +42,7 @@ public class SignupTabFragment extends Fragment implements View.OnClickListener 
         registerButton = (Button) rootView.findViewById(R.id.register_button);
 
         fullNameEditText = (EditText) rootView.findViewById(R.id.full_name_edit_text);
-        ageEditText = (EditText) rootView.findViewById(R.id.age_edit_text);
+        phoneEditText = (EditText) rootView.findViewById(R.id.phone_edit_text);
         emailEditText = (EditText) rootView.findViewById(R.id.email_edit_text);
         passwordEditText = (EditText) rootView.findViewById(R.id.password_edit_text);
 
@@ -64,7 +64,7 @@ public class SignupTabFragment extends Fragment implements View.OnClickListener 
 
     private void registerUser() {
         String fullName = fullNameEditText.getText().toString().trim();
-        String age = ageEditText.getText().toString().trim();
+        String phone = phoneEditText.getText().toString().trim();
         String email = emailEditText.getText().toString().trim();
         String password = passwordEditText.getText().toString().trim();
 
@@ -74,9 +74,9 @@ public class SignupTabFragment extends Fragment implements View.OnClickListener 
             return;
         }
 
-        if(age.isEmpty()) {
-            ageEditText.setError("Необхідний вік!");
-            ageEditText.requestFocus();
+        if(phone.isEmpty()) {
+            phoneEditText.setError("Необхідний номер телефону!");
+            phoneEditText.requestFocus();
             return;
         }
 
@@ -110,7 +110,7 @@ public class SignupTabFragment extends Fragment implements View.OnClickListener 
             public void onComplete(@NonNull Task<AuthResult> task) {
 
                 if(task.isSuccessful()) {
-                    User user = new User(fullName, age, email);
+                    User user = new User(fullName, phone, email);
 
                     FirebaseDatabase.getInstance().getReference("Users")
                             .child(FirebaseAuth.getInstance().getCurrentUser().getUid())

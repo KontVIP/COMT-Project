@@ -17,6 +17,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,16 +45,17 @@ import java.util.List;
 import java.util.Random;
 
 
-public class OneProductActivity extends OptionsMenuProductActivity {
+public class OneProductActivity extends OptionsMenuProductActivity implements View.OnClickListener {
 
     Context context = this;
     public static ViewPager viewPager = null;
     ViewPagerAdapter viewPagerAdapter;
     TextView priceTextView, availableTextView, descriptionTextView, titleDescriptionTextView, codeTextView;
     RadioButton SRadiobutton, MRadiobutton, LRadiobutton, XLRadiobutton, XXLRadiobutton;
+    RadioGroup sizeRadioGroup;
     ImageButton instagramButton;
     Product product;
-    String productId, title, category;
+    String productId, title, category, selectedSize;
     DatabaseReference databaseReference;
 
     private ImageView shoppingCartImageView, favoriteImageView;
@@ -63,6 +65,8 @@ public class OneProductActivity extends OptionsMenuProductActivity {
     RecyclerView recyclerView;
     private List<Product> recommendedList = new ArrayList<>();
     private RecommendedListAdapter mAdapter;
+
+    Toast toast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,10 +98,9 @@ public class OneProductActivity extends OptionsMenuProductActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 product = snapshot.child(productId).getValue(Product.class);
-
                 try {
                     setViewPager();
-                    checkRadioButtons();
+                    setRadioButtons();
                     checkAvailable();
                     checkPrice();
                     checkDescription();
@@ -122,64 +125,28 @@ public class OneProductActivity extends OptionsMenuProductActivity {
         prepareRecommendedListData();
 
         //Shopping cart button (ImageView)
-        FirebaseDatabase.getInstance()
-                .getReference("Users/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/Shopping Cart/" + productId)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (snapshot.getValue() == null) {
-                            shoppingCartImageView.setImageResource(R.drawable.ic_baseline_add_shopping_cart_24);
-                            shoppingCartState = 0;
-                        } else {
-                            shoppingCartImageView.setImageResource(R.drawable.ic_baseline_shopping_cart_24);
-                            shoppingCartState = 1;
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                    }
-                });
 
 
-        shoppingCartImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (shoppingCartState == 1) {
-                    shoppingCartImageView.setImageResource(R.drawable.ic_baseline_add_shopping_cart_24);
-                    shoppingCartState = 0;
-                    FirebaseDatabase.getInstance()
-                            .getReference("Users/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/Shopping Cart/" + productId).removeValue();
-                    Toast.makeText(context, "Видалено з Кошику!", Toast.LENGTH_SHORT).show();
-                } else if (availableTextView.getText().equals("У наявності")) {
-                    if (SRadiobutton.isChecked() || MRadiobutton.isChecked() || LRadiobutton.isChecked() || XLRadiobutton.isChecked() || XXLRadiobutton.isChecked()) {
-                        if (shoppingCartState == 0) {
-                            shoppingCartImageView.setImageResource(R.drawable.ic_baseline_shopping_cart_24);
-                            shoppingCartState = 1;
-                            String size = "None";
-                            if (SRadiobutton.isChecked()) {
-                                size = "S";
-                            } else if (MRadiobutton.isChecked()) {
-                                size = "M";
-                            } else if (LRadiobutton.isChecked()) {
-                                size = "L";
-                            } else if (XLRadiobutton.isChecked()) {
-                                size = "XL";
-                            } else if (XXLRadiobutton.isChecked()) {
-                                size = "XXL";
-                            }
-                            FirebaseDatabase.getInstance()
-                                    .getReference("Users/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/Shopping Cart/" + productId).child("Size").setValue(size);
-                            Toast.makeText(context, "Додано до Кошику!", Toast.LENGTH_SHORT).show();
-                        }
-                    } else {
-                        Toast.makeText(context, "Виберіть розмір!", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    Toast.makeText(context, "Товару немає в наявності!", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+        //todo
+
+//        FirebaseDatabase.getInstance()
+//                .getReference("Users/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/Shopping Cart/" + productId)
+//                .addListenerForSingleValueEvent(new ValueEventListener() {
+//                    @Override
+//                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                        if (snapshot.getValue() == null) {
+//                            shoppingCartImageView.setImageResource(R.drawable.ic_baseline_add_shopping_cart_24);
+//                            shoppingCartState = 0;
+//                        } else {
+//                            shoppingCartImageView.setImageResource(R.drawable.ic_baseline_shopping_cart_24);
+//                            shoppingCartState = 1;
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onCancelled(@NonNull DatabaseError error) {
+//                    }
+//                });
 
 
         //Favorite button (ImageView)
@@ -210,14 +177,25 @@ public class OneProductActivity extends OptionsMenuProductActivity {
                     favoriteState = 1;
                     FirebaseDatabase.getInstance()
                             .getReference("Users/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/Favorites/").child(productId).setValue(1);
-                    Toast.makeText(context, "Додано до Списку бажань!", Toast.LENGTH_SHORT).show();
+                    try {
+                        toast.cancel();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    toast = Toast.makeText(context, "Додано до Списку бажань!", Toast.LENGTH_SHORT);
                 } else {
                     favoriteImageView.setImageResource(R.drawable.ic_baseline_favorite_border_24);
                     favoriteState = 0;
                     FirebaseDatabase.getInstance()
                             .getReference("Users/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/Favorites/" + productId).removeValue();
-                    Toast.makeText(context, "Видалено зі Списку бажань!", Toast.LENGTH_SHORT).show();
+                    try {
+                        toast.cancel();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    toast = Toast.makeText(context, "Видалено зі Списку бажань!", Toast.LENGTH_SHORT);
                 }
+                toast.show();
             }
         });
 
@@ -256,8 +234,155 @@ public class OneProductActivity extends OptionsMenuProductActivity {
             }
         });
 
+        shoppingCartImageView.setOnClickListener(this);
+
+        sizeRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.S_radiobutton:
+                    case R.id.M_radiobutton:
+                    case R.id.L_radiobutton:
+                    case R.id.XL_radiobutton:
+                    case R.id.XXL_radiobutton:
+                        shoppingCartState = 0;
+                        setShoppingCartImage();
+                        break;
+                }
+            }
+        });
     }
 
+    private void init() {
+        sizeRadioGroup = (RadioGroup) findViewById(R.id.size_radio_group);
+        shoppingCartImageView = (ImageView) findViewById(R.id.add_shopping_cart_button);
+        favoriteImageView = (ImageView) findViewById(R.id.add_favorite_button);
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_view_recommended);
+        descriptionTextView = (TextView) findViewById(R.id.description_text_view);
+        titleDescriptionTextView = (TextView) findViewById(R.id.title_description_text_view);
+        codeTextView = (TextView) findViewById(R.id.code_text_view);
+        viewPager = (ViewPager) findViewById(R.id.pager);
+        priceTextView = (TextView) findViewById(R.id.price);
+        availableTextView = (TextView) findViewById(R.id.available_text_view);
+        SRadiobutton = (RadioButton) findViewById(R.id.S_radiobutton);
+        MRadiobutton = (RadioButton) findViewById(R.id.M_radiobutton);
+        LRadiobutton = (RadioButton) findViewById(R.id.L_radiobutton);
+        XLRadiobutton = (RadioButton) findViewById(R.id.XL_radiobutton);
+        XXLRadiobutton = (RadioButton) findViewById(R.id.XXL_radiobutton);
+        instagramButton = (ImageButton) findViewById(R.id.instagram_button);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.add_shopping_cart_button:
+                if (SRadiobutton.isChecked()) {
+                    selectedSize = "S";
+                } else if (MRadiobutton.isChecked()) {
+                    selectedSize = "M";
+                } else if (LRadiobutton.isChecked()) {
+                    selectedSize = "L";
+                } else if (XLRadiobutton.isChecked()) {
+                    selectedSize = "XL";
+                } else if (XXLRadiobutton.isChecked()) {
+                    selectedSize = "XXL";
+                }
+                if (selectedSize != null) {
+                    Log.d("d", "ShoppingCartState = " + shoppingCartState + " LOLOLO");
+                    if (shoppingCartState == 0) {
+                        shoppingCartImageView.setImageResource(R.drawable.ic_baseline_shopping_cart_24);
+                        Long unixTime = System.currentTimeMillis();
+
+                        DatabaseReference productReference = FirebaseDatabase.getInstance()
+                                .getReference("Users/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/Shopping Cart/" + unixTime.toString());
+
+                        productReference.child("id").setValue(productId);
+                        productReference.child("quantity").setValue(1);
+                        productReference.child("size").setValue(selectedSize);
+                        shoppingCartState = 1;
+                    } else {
+                        Log.d("d", "REMOVING VALUE LOLOLO");
+                        shoppingCartState = 0;
+                        shoppingCartImageView.setImageResource(R.drawable.ic_baseline_add_shopping_cart_24);
+                        DatabaseReference shoppingCartReference = FirebaseDatabase.getInstance()
+                                .getReference("Users/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/Shopping Cart/");
+                        shoppingCartReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                                    shoppingCartReference.child(dataSnapshot.getKey()).addValueEventListener(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                            if (snapshot.getChildrenCount() != 0 && snapshot.child("id").getValue(String.class).equals(productId) && snapshot.child("size").getValue(String.class).equals(selectedSize)) {
+                                                shoppingCartReference.child(dataSnapshot.getKey()).removeValue();
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+
+                                        }
+                                    });
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+
+                            }
+                        });
+                    }
+                } else {
+                    Toast.makeText(context, "Виберіть розмір!", Toast.LENGTH_SHORT).show();
+                }
+                break;
+        }
+    }
+
+    public void setShoppingCartImage() {
+        if (SRadiobutton.isChecked()) {
+            selectedSize = "S";
+        } else if (MRadiobutton.isChecked()) {
+            selectedSize = "M";
+        } else if (LRadiobutton.isChecked()) {
+            selectedSize = "L";
+        } else if (XLRadiobutton.isChecked()) {
+            selectedSize = "XL";
+        } else if (XXLRadiobutton.isChecked()) {
+            selectedSize = "XXL";
+        }
+        DatabaseReference shoppingCartReference = FirebaseDatabase.getInstance()
+                .getReference("Users/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/Shopping Cart/");
+        shoppingCartReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    shoppingCartReference.child(dataSnapshot.getKey()).addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if (snapshot.getChildrenCount() != 0 && snapshot.child("id").getValue(String.class).trim().equals(productId.trim()) && snapshot.child("size").getValue(String.class).trim().equals(selectedSize.trim())) {
+                                shoppingCartState = 1;
+                                shoppingCartImageView.setImageResource(R.drawable.ic_baseline_shopping_cart_24);
+                            } else if (shoppingCartState != 1) {
+                                shoppingCartState = 0;
+                                shoppingCartImageView.setImageResource(R.drawable.ic_baseline_add_shopping_cart_24);
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -282,25 +407,6 @@ public class OneProductActivity extends OptionsMenuProductActivity {
                 radioButton.startAnimation(animation);
             }
         });
-    }
-
-
-    private void init() {
-        shoppingCartImageView = (ImageView) findViewById(R.id.add_shopping_cart_button);
-        favoriteImageView = (ImageView) findViewById(R.id.add_favorite_button);
-        recyclerView = (RecyclerView) findViewById(R.id.recycler_view_recommended);
-        descriptionTextView = (TextView) findViewById(R.id.description_text_view);
-        titleDescriptionTextView = (TextView) findViewById(R.id.title_description_text_view);
-        codeTextView = (TextView) findViewById(R.id.code_text_view);
-        viewPager = (ViewPager) findViewById(R.id.pager);
-        priceTextView = (TextView) findViewById(R.id.price);
-        availableTextView = (TextView) findViewById(R.id.available_text_view);
-        SRadiobutton = (RadioButton) findViewById(R.id.S_radiobutton);
-        MRadiobutton = (RadioButton) findViewById(R.id.M_radiobutton);
-        LRadiobutton = (RadioButton) findViewById(R.id.L_radiobutton);
-        XLRadiobutton = (RadioButton) findViewById(R.id.XL_radiobutton);
-        XXLRadiobutton = (RadioButton) findViewById(R.id.XXL_radiobutton);
-        instagramButton = (ImageButton) findViewById(R.id.instagram_button);
     }
 
     private void prepareRecommendedListData() {
@@ -382,7 +488,7 @@ public class OneProductActivity extends OptionsMenuProductActivity {
         }
     }
 
-    private void checkRadioButtons() {
+    private void setRadioButtons() {
         animRadiobutton(SRadiobutton);
         if (!product.isSize_S()) {
             SRadiobutton.setVisibility(View.GONE);
@@ -427,6 +533,5 @@ public class OneProductActivity extends OptionsMenuProductActivity {
         List<ResolveInfo> list = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
         return list.size() > 0;
     }
-
 
 }

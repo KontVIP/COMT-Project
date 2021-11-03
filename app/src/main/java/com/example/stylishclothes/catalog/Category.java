@@ -1,7 +1,5 @@
 package com.example.stylishclothes.catalog;
 
-import android.content.Intent;
-
 public class Category {
 
     public String title;

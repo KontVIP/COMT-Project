@@ -46,6 +46,9 @@ public class ProductListActivity extends OptionsMenuProductActivity {
         setContentView(R.layout.activity_product_list);
         toolBar = findViewById(R.id.toolbar);
 
+
+
+
         try {
             setSupportActionBar(toolBar);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);

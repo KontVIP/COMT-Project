@@ -1,41 +1,35 @@
 package com.example.stylishclothes.auth;
 
-import androidx.annotation.NonNull;
+
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
+import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
-import android.text.TextUtils;
-import android.util.Log;
-import android.util.Patterns;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
-
 import com.example.stylishclothes.InternetConnection;
 import com.example.stylishclothes.MainActivity;
-import com.example.stylishclothes.auth.AuthActivity;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
+import com.example.stylishclothes.R;
 import com.google.firebase.auth.FirebaseAuth;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.InetAddress;
-import java.net.URL;
-import java.net.UnknownHostException;
-
-import io.paperdb.Paper;
 
 public class SplashScreen extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     Context context = this;
     private static int i = 0;
+
+    private LayoutInflater dialogInflater;
+    private View dialogLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,10 +49,31 @@ public class SplashScreen extends AppCompatActivity {
 
             } else {
                 Toast.makeText(context, "No Internet connection!", Toast.LENGTH_LONG).show();
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setTitle("Немає Інтернет з'єднання.");
+                builder.setMessage("Спрбуйте перезавантажити додаток.");
+                builder.setNeutralButton(
+                        "Перезавантажити",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                triggerRebirth(context);
+                            }
+                        });
+                AlertDialog alert = builder.create();
+                alert.show();
             }
         } else {
             finish();
         }
+    }
+
+    public static void triggerRebirth(Context context) {
+        PackageManager packageManager = context.getPackageManager();
+        Intent intent = packageManager.getLaunchIntentForPackage(context.getPackageName());
+        ComponentName componentName = intent.getComponent();
+        Intent mainIntent = Intent.makeRestartActivityTask(componentName);
+        context.startActivity(mainIntent);
+        Runtime.getRuntime().exit(0);
     }
 
 }

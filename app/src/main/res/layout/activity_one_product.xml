@@ -83,7 +83,10 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:paddingLeft="4dp"
-                        android:text="Код: 936431" />
+                        android:paddingRight="8dp"
+                        android:gravity="center"
+                        android:text="Код:
+                        1234567890123" />
 
                     <RatingBar
                         style="?android:attr/ratingBarStyleSmall"
@@ -127,6 +130,7 @@
                 android:layout_marginRight="4dp">
 
                 <RadioGroup
+                    android:id="@+id/size_radio_group"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">

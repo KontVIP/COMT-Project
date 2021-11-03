@@ -153,11 +153,10 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                 String fullName = firebaseUser.getDisplayName();
                 String profilePhotoPath = firebaseUser.getPhotoUrl().toString();
 
-                User user = new User(fullName, "None", email, profilePhotoPath);
-                FirebaseDatabase.getInstance().getReference("Users").child(uid).setValue(user);
-
                 //check if user new or existing
                 if (authResult.getAdditionalUserInfo().isNewUser()) {
+                    User user = new User(fullName, "None", email, profilePhotoPath);
+                    FirebaseDatabase.getInstance().getReference("Users").child(uid).setValue(user);
                     Toast.makeText(AuthActivity.this, "Account Created...", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(AuthActivity.this, "Existing user...", Toast.LENGTH_SHORT).show();

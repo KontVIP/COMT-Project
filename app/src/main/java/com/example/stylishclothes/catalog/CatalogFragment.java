@@ -81,8 +81,6 @@ public class CatalogFragment extends Fragment implements View.OnClickListener {
         //List
         categories = new ArrayList<Category>();
         listView.setDivider(null);
-//        categories.add(new Category("Штани", "", new Intent(getContext(), TrousersActivity.class)));
-//        categories.add(new Category("Толстовки", "", new Intent(getContext(), ProductsActivity.class)));
 
         try {
             loadData();

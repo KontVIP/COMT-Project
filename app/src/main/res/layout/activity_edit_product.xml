@@ -38,6 +38,19 @@
                 android:layout_marginLeft="8dp"
                 android:orientation="vertical">
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/id_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="copy id "
+                        android:textSize="22sp"
+                        android:drawableRight="@drawable/ic_baseline_content_copy_24"/>
+
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -50,8 +63,9 @@
                         android:text="Категорія: "
                         android:textSize="18sp" />
 
-                    <Spinner
-                        android:id="@+id/category_spinner"
+                    <TextView
+                        android:textSize="20sp"
+                        android:id="@+id/category_text_view"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
 

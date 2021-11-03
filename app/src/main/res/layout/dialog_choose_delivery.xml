@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Spinner
+        android:id="@+id/dialog_way_of_delivery_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Область"
+        android:entries="@array/deliveries"
+        android:paddingLeft="24dp"/>
+
+    <EditText
+        android:id="@+id/branch_number_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Номер відділення"
+        android:inputType="number"
+        android:paddingLeft="24dp"/>
+
+</LinearLayout>

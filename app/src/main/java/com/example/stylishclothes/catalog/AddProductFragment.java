@@ -1,13 +1,11 @@
 package com.example.stylishclothes.catalog;
 
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +17,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
@@ -28,13 +27,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.example.stylishclothes.R;
-import com.example.stylishclothes.auth.AuthActivity;
-import com.example.stylishclothes.auth.RegisterUserActivity;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -46,7 +42,6 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,8 +59,8 @@ public class AddProductFragment extends Fragment {
     CheckBox size_S, size_M, size_L, size_XL, size_XXL;
     int numImg;
     final int ADDED_SUCCESSFULLY = 1;
-    String selectedSpinnerItem, title;
-    ArrayAdapter<String> spinnerAdapter;
+    String title;
+    TextView categoryTextview;
 
     Product product;
 
@@ -200,43 +195,9 @@ public class AddProductFragment extends Fragment {
             }
         });
 
-        //Category spinner
-        Spinner categorySpinner = rootView.findViewById(R.id.category_spinner);
-        List<String> spinnerArray = new ArrayList<>();
-
-        categoryReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                try {
-                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        Category category = dataSnapshot.getValue(Category.class);
-                        spinnerArray.add(category.title);
-                    }
-                    spinnerAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, spinnerArray);
-                    categorySpinner.setAdapter(spinnerAdapter);
-                    categorySpinner.setSelection(getIndex(categorySpinner, title));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-
-        categorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                selectedSpinnerItem = categorySpinner.getSelectedItem().toString();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
+        //Category TextView
+        categoryTextview = rootView.findViewById(R.id.category_text_view);
+        categoryTextview.setText(title);
 
         //Done button
         fab_done = (FloatingActionButton) rootView.findViewById(R.id.floating_done_button);
@@ -262,7 +223,7 @@ public class AddProductFragment extends Fragment {
         String description = descriptionEditText.getText().toString();
         String price = priceEditText.getText().toString().trim();
         String code = productCodeEditText.getText().toString().trim();
-        String category = selectedSpinnerItem;
+        String category = categoryTextview.getText().toString().trim();
 
         product.setCategory(category);
         product.setAvailable(rYes.isChecked());

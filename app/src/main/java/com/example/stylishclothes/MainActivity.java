@@ -7,14 +7,13 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
 import android.os.Bundle;
-import android.text.Html;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.stylishclothes.catalog.CatalogFragment;
-import com.github.ybq.android.spinkit.SpinKitView;
+import com.example.stylishclothes.shoppingcart.ShoppingCartFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {

@@ -49,8 +49,9 @@
                         android:text="Категорія: "
                         android:textSize="18sp" />
 
-                    <Spinner
-                        android:id="@+id/category_spinner"
+                    <TextView
+                        android:textSize="20sp"
+                        android:id="@+id/category_text_view"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
 

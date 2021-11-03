@@ -1,15 +1,41 @@
 package com.example.stylishclothes.catalog;
 
-import android.net.Uri;
 
 public class Product {
 
+    public String currentSize;
+
     private String id, title, titleDescription, description, price, productCode, titleImagePath,
-            firstImagePath = "", secondImagePath = "", thirdImagePath = "", fourthImagePath = "", fifthImagePath = "", category;
+            firstImagePath = "", secondImagePath = "", thirdImagePath = "", fourthImagePath = "",
+            fifthImagePath = "", category;
     private boolean size_S = false, size_M = false, size_L = false, size_XL = false, size_XXL = false, available = false;
      public boolean DELETED = false;
 
     public Product() {
+    }
+
+    public Product(Product product) {
+        this.id = product.id;
+        this.title = product.title;
+        this.titleDescription = product.titleDescription;
+        this.description = product.description;
+        this.price = product.price;
+        this.productCode = product.productCode;
+        this.titleImagePath = product.titleImagePath;
+        this.firstImagePath = product.firstImagePath;
+        this.secondImagePath = product.secondImagePath;
+        this.thirdImagePath = product.thirdImagePath;
+        this.fourthImagePath = product.fourthImagePath;
+        this.fifthImagePath = product.fifthImagePath;
+        this.category = product.category;
+        this.size_S = product.size_S;
+        this.size_M = product.size_M;
+        this.size_L = product.size_L;
+        this.size_XL = product.size_XL;
+        this.size_XXL = product.size_XXL;
+        this.available = product.available;
+        this.DELETED = product.DELETED;
+        this.currentSize = product.currentSize;
     }
 
     public boolean isAvailable() {

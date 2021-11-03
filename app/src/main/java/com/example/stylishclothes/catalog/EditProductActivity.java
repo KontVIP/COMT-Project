@@ -1,18 +1,15 @@
 package com.example.stylishclothes.catalog;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -44,8 +41,6 @@ import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class EditProductActivity extends AppCompatActivity {
 
@@ -60,10 +55,8 @@ public class EditProductActivity extends AppCompatActivity {
     RadioButton rYes, rNo;
     CheckBox sizeCheckBox_S, sizeCheckBox_M, sizeCheckBox_L, sizeCheckBox_XL, sizeCheckBox_XXL;
     int numImg;
-    TextView titleTextView;
-    Spinner categorySpinner;
-    String selectedSpinnerItem;
-    ArrayAdapter<String> spinnerAdapter;
+    TextView titleTextView, categoryTextView;
+    Button idButton;
 
     final int ADDED_SUCCESSFULLY = 1;
     final byte[] IMAGE_NOT_EXIST = "1".getBytes();
@@ -144,6 +137,22 @@ public class EditProductActivity extends AppCompatActivity {
         descriptionEditText = findViewById(R.id.description_edit_text);
         titleDescriptionEditText = findViewById(R.id.title_description_edit_text);
 
+        //Category TextView
+        categoryTextView = findViewById(R.id.category_text_view);
+        categoryTextView.setText(categoryName);
+
+        //Id Button
+        idButton = (Button) findViewById(R.id.id_button);
+        idButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("Product id", productId);
+                clipboard.setPrimaryClip(clip);
+                Toast.makeText(context, "Скопійовано", Toast.LENGTH_SHORT).show();
+            }
+        });
+
         //Upload title image
         Button uploadTitlePhotoButton = (Button) findViewById(R.id.upload_title_image_button);
         uploadTitlePhotoButton.setOnClickListener(new View.OnClickListener() {
@@ -218,28 +227,6 @@ public class EditProductActivity extends AppCompatActivity {
             }
         });
 
-        //Category spinner
-        categorySpinner = findViewById(R.id.category_spinner);
-        List<String> spinnerArray = new ArrayList<>();
-        categoryReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                    Category category = dataSnapshot.getValue(Category.class);
-                    spinnerArray.add(category.title);
-                }
-                spinnerAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, spinnerArray);
-                categorySpinner.setAdapter(spinnerAdapter);
-                categorySpinner.setSelection(getIndex(categorySpinner, categoryName));
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-
-
         //Done editing
         FloatingActionButton floatingDoneButton = (FloatingActionButton) findViewById(R.id.floating_done_button);
         floatingDoneButton.setOnClickListener(new View.OnClickListener() {
@@ -287,9 +274,7 @@ public class EditProductActivity extends AppCompatActivity {
         String description = descriptionEditText.getText().toString();
         String price = priceEditText.getText().toString().trim();
         String code = productCodeEditText.getText().toString().trim();
-        String category = categorySpinner.getSelectedItem().toString().trim();
 
-        product.setCategory(category);
         product.setAvailable(rYes.isChecked());
         product.setTitle(title);
         product.setTitleDescription(titleDescription);

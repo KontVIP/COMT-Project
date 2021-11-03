@@ -24,10 +24,10 @@
         <activity android:name=".catalog.OneProductActivity" />
         <activity android:name=".catalog.ProductListActivity" />
         <activity android:name=".catalog.EditProductActivity" />
-        <activity android:name=".catalog.categories.TrousersActivity" />
+        <activity android:name=".shoppingcart.ContactDetailsActivity" />
+        <activity android:name=".shoppingcart.CheckoutActivity" />
         <activity android:name=".MainActivity" />
         <activity android:name=".auth.ForgotPasswordActivity" />
-        <activity android:name=".auth.RegisterUserActivity" />
         <activity android:name=".auth.AuthActivity"/>
 
     </application>
