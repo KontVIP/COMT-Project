@@ -124,29 +124,6 @@ public class OneProductActivity extends OptionsMenuProductActivity implements Vi
         recyclerView.setAdapter(mAdapter);
         prepareRecommendedListData();
 
-        //Shopping cart button (ImageView)
-
-
-        //todo
-
-//        FirebaseDatabase.getInstance()
-//                .getReference("Users/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/Shopping Cart/" + productId)
-//                .addListenerForSingleValueEvent(new ValueEventListener() {
-//                    @Override
-//                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                        if (snapshot.getValue() == null) {
-//                            shoppingCartImageView.setImageResource(R.drawable.ic_baseline_add_shopping_cart_24);
-//                            shoppingCartState = 0;
-//                        } else {
-//                            shoppingCartImageView.setImageResource(R.drawable.ic_baseline_shopping_cart_24);
-//                            shoppingCartState = 1;
-//                        }
-//                    }
-//
-//                    @Override
-//                    public void onCancelled(@NonNull DatabaseError error) {
-//                    }
-//                });
 
 
         //Favorite button (ImageView)

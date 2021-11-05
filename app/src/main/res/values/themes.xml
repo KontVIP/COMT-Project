@@ -33,4 +33,16 @@
         <item name="android:windowBackground">@drawable/splashscreen</item>
     </style>
 
+    <style name="LinearLayoutMain">
+        <item name="android:background">@drawable/border_main</item>
+        <item name="android:padding">1dp</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="ImageViewMain">
+        <item name="android:layout_weight">1</item>
+        <item name="android:scaleType">centerCrop</item>
+        <item name="android:layout_margin">1dp</item>
+    </style>
+
 </resources>

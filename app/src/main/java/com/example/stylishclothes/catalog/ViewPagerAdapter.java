@@ -27,7 +27,7 @@ import com.squareup.picasso.Picasso;
 import java.io.ByteArrayOutputStream;
 import java.util.Objects;
 
-class ViewPagerAdapter extends PagerAdapter {
+public class ViewPagerAdapter extends PagerAdapter {
 
     Context mContext;
     String mImage_1, mImage_2, mImage_3, mImage_4, mImage_5;

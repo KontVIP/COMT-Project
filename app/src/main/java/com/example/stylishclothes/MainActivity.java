@@ -13,6 +13,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.stylishclothes.catalog.CatalogFragment;
+import com.example.stylishclothes.home.HomeFragment;
 import com.example.stylishclothes.shoppingcart.ShoppingCartFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
