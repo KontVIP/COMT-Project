@@ -487,8 +487,6 @@ public class ProductAdapter extends ArrayAdapter<Product> {
     private void intentOneProductActivity(Product currentProduct) {
         Intent intent = new Intent(getContext(), OneProductActivity.class);
         intent.putExtra("ProductId", currentProduct.getId());
-        intent.putExtra("Title", currentProduct.getTitle());
-        intent.putExtra("Category", currentProduct.getCategory());
         getContext().startActivity(intent);
     }
 

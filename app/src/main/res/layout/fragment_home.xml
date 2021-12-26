@@ -1,104 +1,134 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:card_view="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:paddingTop="50dp">
 
-
-
-    <ScrollView
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <LinearLayout
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:background="@color/black">
+            android:layout_height="match_parent">
 
-            <!-- ViewPager -->
             <LinearLayout
+                android:id="@+id/timeline_layout"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:background="@drawable/border"
-                android:gravity="center">
+                android:layout_height="match_parent"
+                android:background="@color/black"
+                android:orientation="vertical">
 
-                <RelativeLayout
+                <!-- ViewPager -->
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="1dp">
+                    android:layout_height="match_parent"
+                    android:background="@color/white"
+                    android:paddingTop="8dp">
 
-                    <androidx.viewpager.widget.ViewPager
-                        android:id="@+id/pager"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"></androidx.viewpager.widget.ViewPager>
-
-                    <com.google.android.material.tabs.TabLayout
-                        android:id="@+id/tabDots"
+                    <androidx.cardview.widget.CardView
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentBottom="true"
-                        android:background="@android:color/transparent"
-                        app:tabBackground="@drawable/tab_selector"
-                        app:tabGravity="center"
-                        app:tabIndicatorHeight="0dp"/>
+                        android:layout_height="200dp"
+                        android:layout_margin="6dp"
+                        android:background="@color/white"
+                        android:gravity="center"
+                        app:cardCornerRadius="20dp">
 
-                </RelativeLayout>
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <com.github.ybq.android.spinkit.SpinKitView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                xmlns:app="http://schemas.android.com/apk/res-auto"
+                                style="@style/SpinKitView.Large.Circle"
+                                app:SpinKit_Color="#2f4653" />
+
+                            <androidx.viewpager.widget.ViewPager
+                                android:id="@+id/pager"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"></androidx.viewpager.widget.ViewPager>
+
+                            <com.google.android.material.tabs.TabLayout
+                                android:id="@+id/tabDots"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentBottom="true"
+                                android:background="@android:color/transparent"
+                                app:tabBackground="@drawable/tab_selector"
+                                app:tabGravity="center"
+                                app:tabIndicatorHeight="0dp" />
+
+                        </RelativeLayout>
+
+                    </androidx.cardview.widget.CardView>
+                </LinearLayout>
+
+
+
+                <LinearLayout
+                    style="@style/LinearLayoutMain">
+
+                    <ImageView
+                        style="@style/ImageViewMain"
+                        android:src="@drawable/hoody_main_2" />
+
+                </LinearLayout>
+
+
+                <LinearLayout
+                    style="@style/LinearLayoutMain">
+
+                    <ImageView
+                        style="@style/ImageViewMain"
+                        android:src="@drawable/trousers_main_2" />
+
+                    <ImageView
+                        style="@style/ImageViewMain"
+                        android:src="@drawable/trousers_main" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    style="@style/LinearLayoutMain">
+
+                    <ImageView
+                        style="@style/ImageViewMain"
+                        android:src="@drawable/hoody_main" />
+
+                </LinearLayout>
+
 
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
+        </ScrollView>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:gravity="bottom|right">
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/floating_add_button"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                style="@style/LinearLayoutMain">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="450dp"
-                    style="@style/ImageViewMain"
-                    android:src="@drawable/hoody_main_2"/>
-
-            </LinearLayout>
-
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="450dp"
-                style="@style/LinearLayoutMain">
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    style="@style/ImageViewMain"
-                    android:src="@drawable/trousers_main_2" />
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    style="@style/ImageViewMain"
-                    android:src="@drawable/trousers_main"/>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                style="@style/LinearLayoutMain">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="450dp"
-                    style="@style/ImageViewMain"
-                    android:src="@drawable/hoody_main" />
-
-            </LinearLayout>
-
+                android:layout_gravity="bottom|right"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                android:contentDescription="Додати post"
+                app:srcCompat="@drawable/ic_plus_24" />
 
         </LinearLayout>
 
-    </ScrollView>
-    
+    </RelativeLayout>
+
+
+
 
 </LinearLayout>

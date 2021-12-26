@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".home.CreatePostFragment"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginLeft="4dp"
+        android:gravity="center|left">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="Перше\nзображення: "
+            android:textSize="18sp"/>
+
+        <ImageView
+            android:id="@+id/first_post_image_view"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@drawable/znak_voprosa" />
+
+        <Button
+            android:id="@+id/first_upload_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="4dp"
+            android:text="Upload Photo"/>
+
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/first_product_id_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:hint="First product id"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginLeft="4dp"
+        android:gravity="center|left">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="Друге\nзображення: "
+            android:textSize="18sp"/>
+
+        <ImageView
+            android:id="@+id/second_post_image_view"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@drawable/znak_voprosa" />
+
+        <Button
+            android:id="@+id/second_upload_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="4dp"
+            android:text="Upload Photo"/>
+
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/second_product_id_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:hint="Second product id"/>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center|bottom">
+
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/create_post_button"
+            android:layout_width="200dp"
+            android:layout_height="50dp"
+            android:text="Створити"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:fontFamily="sans-serif-black"
+            android:layout_marginBottom="16dp"/>
+
+    </LinearLayout>
+
+
+</LinearLayout>

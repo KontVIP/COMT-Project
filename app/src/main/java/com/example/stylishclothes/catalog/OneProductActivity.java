@@ -86,27 +86,85 @@ public class OneProductActivity extends OptionsMenuProductActivity implements Vi
         //get data from ProductAdapter
         Bundle arguments = getIntent().getExtras();
         if (arguments != null) {
-            title = arguments.getString("Title");
-            setTitle(title);
+            //title = arguments.getString("Title");
+            //setTitle(title);
             productId = arguments.getString("ProductId");
-            category = arguments.getString("Category");
+            //category = arguments.getString("Category");
         }
 
         //firebase
-        databaseReference = FirebaseDatabase.getInstance().getReference("Categories/" + category + "/Products");
+        databaseReference = FirebaseDatabase.getInstance().getReference("Categories/");
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                product = snapshot.child(productId).getValue(Product.class);
-                try {
-                    setViewPager();
-                    setRadioButtons();
-                    checkAvailable();
-                    checkPrice();
-                    checkDescription();
-                    checkProductCode();
-                } catch (Exception e) {
-                    e.printStackTrace();
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    product = dataSnapshot.child("Products").child(productId).getValue(Product.class);
+
+                    if (product != null) {
+
+                        setTitle(product.getTitle());
+
+                        //Recycler view / Recommended list
+                        mAdapter = new RecommendedListAdapter(recommendedList, context);
+                        LinearLayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
+                        recyclerView.setLayoutManager(mLayoutManager);
+                        recyclerView.setItemAnimator(new DefaultItemAnimator());
+                        recyclerView.setAdapter(mAdapter);
+
+
+                        int childrenCount = (int) dataSnapshot.child("Products").getChildrenCount();
+                        if (childrenCount <= 6) {
+                            for (DataSnapshot dataSnapshot2 : dataSnapshot.child("Products").getChildren()) {
+                                Product product = dataSnapshot2.getValue(Product.class);
+                                if (!product.getId().equals(productId)) {
+                                    recommendedList.add(product);
+                                }
+                            }
+                        } else {
+                            // [0 ; childrenCount]
+                            int[] randomChildNum = new int[6];
+                            ArrayList<Integer> list = new ArrayList<Integer>();
+                            for (int i = 0; i < childrenCount; i++) {
+                                list.add(i);
+                            }
+                            Collections.shuffle(list);
+                            for (int i = 0; i < 6; i++) {
+                                randomChildNum[i] = list.get(i);
+                            }
+
+                            Arrays.sort(randomChildNum);
+                            int i = 0, k = 0;
+                            for (DataSnapshot dataSnapshot2 : dataSnapshot.child("Products").getChildren()) {
+                                if (k != 6 && i == randomChildNum[k]) {
+                                    k++;
+                                    Product product = dataSnapshot2.getValue(Product.class);
+                                    if (!product.getId().equals(productId)) {
+                                        recommendedList.add(product);
+                                    }
+                                }
+                                i++;
+                            }
+                        }
+                        Collections.shuffle(recommendedList);
+
+                        mAdapter.notifyDataSetChanged();
+
+
+
+
+                        try {
+                            setViewPager();
+                            setRadioButtons();
+                            checkAvailable();
+                            checkPrice();
+                            checkDescription();
+                            checkProductCode();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+
                 }
             }
 
@@ -115,15 +173,6 @@ public class OneProductActivity extends OptionsMenuProductActivity implements Vi
 
             }
         });
-
-        //Recycler view / Recommended list
-        mAdapter = new RecommendedListAdapter(recommendedList, context);
-        LinearLayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
-        recyclerView.setLayoutManager(mLayoutManager);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.setAdapter(mAdapter);
-        prepareRecommendedListData();
-
 
 
         //Favorite button (ImageView)
@@ -384,57 +433,6 @@ public class OneProductActivity extends OptionsMenuProductActivity implements Vi
                 radioButton.startAnimation(animation);
             }
         });
-    }
-
-    private void prepareRecommendedListData() {
-
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                int childrenCount = (int) snapshot.getChildrenCount();
-                if (childrenCount <= 6) {
-                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        Product product = dataSnapshot.getValue(Product.class);
-                        if (!product.getId().equals(productId)) {
-                            recommendedList.add(product);
-                        }
-                    }
-                } else {
-                    Random random = new Random();
-                    // [0 ; childrenCount]
-                    int[] randomChildNum = new int[6];
-                    ArrayList<Integer> list = new ArrayList<Integer>();
-                    for (int i = 0; i < childrenCount; i++) {
-                        list.add(i);
-                    }
-                    Collections.shuffle(list);
-                    for (int i = 0; i < 6; i++) {
-                        randomChildNum[i] = list.get(i);
-                    }
-
-                    Arrays.sort(randomChildNum);
-                    int i = 0, k = 0;
-                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        if (k != 6 && i == randomChildNum[k]) {
-                            k++;
-                            Product product = dataSnapshot.getValue(Product.class);
-                            if (!product.getId().equals(productId)) {
-                                recommendedList.add(product);
-                            }
-                        }
-                        i++;
-                    }
-                }
-                Collections.shuffle(recommendedList);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-
-        mAdapter.notifyDataSetChanged();
     }
 
     private void setViewPager() {

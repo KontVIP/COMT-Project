@@ -115,7 +115,7 @@ public class AddProductFragment extends Fragment {
                 getActivity().getSupportFragmentManager().beginTransaction().remove(fragment).commit();
             }
         };
-        requireActivity().getOnBackPressedDispatcher().addCallback(this, callback);
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);
 
         //Upload title image
         Button uploadTitlePhotoButton = (Button) rootView.findViewById(R.id.upload_title_image_button);
