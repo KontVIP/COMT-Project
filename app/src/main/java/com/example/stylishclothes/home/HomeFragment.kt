@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.content.ContextWrapper
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -19,7 +20,9 @@ import com.example.stylishclothes.R
 import com.example.stylishclothes.catalog.OneProductActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.database.*
+import com.google.firebase.storage.FirebaseStorage
 import com.squareup.picasso.Picasso
+import java.lang.Exception
 import java.util.*
 
 class HomeFragment : Fragment() {
@@ -60,87 +63,98 @@ class HomeFragment : Fragment() {
         databaseTimelineReference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
 
-                snapshot.children.forEach { key ->
-                    val linearLayout =
+                try {
+                snapshot.children.reversed().forEach { key ->
+                    val linearLayout: LinearLayout =
                         LinearLayout(ContextWrapper(context), null, R.style.LinearLayoutMain)
 
                     FirebaseDatabase.getInstance().getReference("Home/timeline/" + key.key)
                         .addValueEventListener(object : ValueEventListener {
                             override fun onDataChange(snapshot: DataSnapshot) {
-
-                                snapshot.children.forEach {
-                                    val imageView = ImageView(
-                                        ContextWrapper(context),
-                                        null,
-                                        R.style.ImageViewMain
-                                    )
-
-                                    val productId = snapshot.child("${it.key}").child("id").value
-                                    linearLayout.addView(imageView)
-                                    Picasso.get().load(
-                                        snapshot.child("${it.key}").child("img").value as String
-                                    ).into(imageView)
-                                    imageView.scaleType = ImageView.ScaleType.CENTER_CROP
-                                    val margins: Int = TypedValue.applyDimension(
-                                        TypedValue.COMPLEX_UNIT_DIP,
-                                        1.2f,
-                                        resources.displayMetrics
-                                    )
-                                        .toInt()
-                                    imageView.layoutParams.apply {
-                                        (this as LinearLayout.LayoutParams).weight = 1f
-                                        (this as ViewGroup.MarginLayoutParams).setMargins(
-                                            margins,
-                                            margins,
-                                            margins,
-                                            margins
+                                try {
+                                    snapshot.children.forEach {
+                                        val imageView = ImageView(
+                                            ContextWrapper(context),
+                                            null,
+                                            R.style.ImageViewMain
                                         )
-                                    }
-                                    imageView.layoutParams.width =
-                                        LinearLayout.LayoutParams.MATCH_PARENT
-                                    imageView.layoutParams.height = TypedValue.applyDimension(
-                                        TypedValue.COMPLEX_UNIT_DIP,
-                                        450f,
-                                        resources.displayMetrics
-                                    )
-                                        .toInt()
 
-                                    imageView.setOnClickListener {
-                                        val intent = Intent(context, OneProductActivity::class.java)
-                                        intent.putExtra("ProductId", "$productId")
-                                        startActivity(intent)
-                                    }
+                                        val productId =
+                                            snapshot.child("${it.key}").child("id").value
+                                        linearLayout.addView(imageView)
+                                        Picasso.get().load(
+                                            snapshot.child("${it.key}").child("img").value as String
+                                        ).into(imageView)
+                                        imageView.scaleType = ImageView.ScaleType.CENTER_CROP
+                                        val margins: Int = TypedValue.applyDimension(
+                                            TypedValue.COMPLEX_UNIT_DIP,
+                                            1.2f,
+                                            resources.displayMetrics
+                                        )
+                                            .toInt()
+                                        imageView.layoutParams.apply {
+                                            (this as LinearLayout.LayoutParams).weight = 1f
+                                            (this as ViewGroup.MarginLayoutParams).setMargins(
+                                                margins,
+                                                margins,
+                                                margins,
+                                                margins
+                                            )
+                                        }
+                                        imageView.layoutParams.width =
+                                            LinearLayout.LayoutParams.MATCH_PARENT
+                                        imageView.layoutParams.height = TypedValue.applyDimension(
+                                            TypedValue.COMPLEX_UNIT_DIP,
+                                            450f,
+                                            resources.displayMetrics
+                                        )
+                                            .toInt()
 
-                                    //for deleting of product (ONLY FOR ADMIN ) todo
-                                    imageView.setOnLongClickListener {
-
-                                        val closeBuilder = AlertDialog.Builder(context)
-                                        closeBuilder.setMessage("Are you sure you want to delete this post?")
-                                        closeBuilder.setCancelable(true)
-
-                                        closeBuilder.setPositiveButton(
-                                            "Yes"
-                                        ) { _, _ ->
-                                            FirebaseDatabase.getInstance()
-                                                .getReference("Home/timeline/${key.key}")
-                                                .addValueEventListener(object : ValueEventListener {
-                                                    override fun onDataChange(snapshot: DataSnapshot) {
-                                                        snapshot.ref.removeValue()
-                                                    }
-                                                    override fun onCancelled(error: DatabaseError) {}
-                                                })
+                                        imageView.setOnClickListener {
+                                            val intent =
+                                                Intent(context, OneProductActivity::class.java)
+                                            intent.putExtra("ProductId", "$productId")
+                                            startActivity(intent)
                                         }
 
-                                        closeBuilder.setNegativeButton(
-                                            "No"
-                                        ) { dialog, _ -> dialog.cancel() }
+                                        //for deleting of product (ONLY FOR ADMIN ) todo
+                                        imageView.setOnLongClickListener {
 
-                                        val closeAlert = closeBuilder.create()
-                                        closeAlert.show()
+                                            val closeBuilder = AlertDialog.Builder(context)
+                                            closeBuilder.setMessage("Are you sure you want to delete this post?")
+                                            closeBuilder.setCancelable(true)
 
-                                        true
+                                            closeBuilder.setPositiveButton(
+                                                "Yes"
+                                            ) { _, _ ->
+                                                FirebaseDatabase.getInstance().getReference("Home/timeline/${key.key}")
+                                                    .addValueEventListener(object : ValueEventListener {
+                                                        override fun onDataChange(snapshot: DataSnapshot) {
+                                                            try {
+                                                                FirebaseStorage.getInstance().getReferenceFromUrl(snapshot.child("p_1/img").value.toString()).delete()
+                                                                FirebaseStorage.getInstance().getReferenceFromUrl(snapshot.child("p_2/img").value.toString()).delete()
+                                                            } catch (e : Exception) {
+                                                                e.printStackTrace()
+                                                            }
+                                                            snapshot.ref.removeValue()
+                                                        }
+                                                        override fun onCancelled(error: DatabaseError) {}
+                                                    })
+                                            }
+
+                                            closeBuilder.setNegativeButton(
+                                                "No"
+                                            ) { dialog, _ -> dialog.cancel() }
+
+                                            val closeAlert = closeBuilder.create()
+                                            closeAlert.show()
+
+                                            true
+                                        }
+
                                     }
-
+                                } catch (e: Exception) {
+                                    e.printStackTrace()
                                 }
 
                             }
@@ -156,6 +170,9 @@ class HomeFragment : Fragment() {
                         })
                     timelineLayout.addView(linearLayout)
                 }
+            } catch (e : Exception) {
+                e.printStackTrace()
+            }
 
             }
 

@@ -70,37 +70,37 @@
 
 
 
-                <LinearLayout
-                    style="@style/LinearLayoutMain">
+<!--                <LinearLayout-->
+<!--                    style="@style/LinearLayoutMain">-->
 
-                    <ImageView
-                        style="@style/ImageViewMain"
-                        android:src="@drawable/hoody_main_2" />
+<!--                    <ImageView-->
+<!--                        style="@style/ImageViewMain"-->
+<!--                        android:src="@drawable/hoody_main_2" />-->
 
-                </LinearLayout>
+<!--                </LinearLayout>-->
 
 
-                <LinearLayout
-                    style="@style/LinearLayoutMain">
+<!--                <LinearLayout-->
+<!--                    style="@style/LinearLayoutMain">-->
 
-                    <ImageView
-                        style="@style/ImageViewMain"
-                        android:src="@drawable/trousers_main_2" />
+<!--                    <ImageView-->
+<!--                        style="@style/ImageViewMain"-->
+<!--                        android:src="@drawable/trousers_main_2" />-->
 
-                    <ImageView
-                        style="@style/ImageViewMain"
-                        android:src="@drawable/trousers_main" />
+<!--                    <ImageView-->
+<!--                        style="@style/ImageViewMain"-->
+<!--                        android:src="@drawable/trousers_main" />-->
 
-                </LinearLayout>
+<!--                </LinearLayout>-->
 
-                <LinearLayout
-                    style="@style/LinearLayoutMain">
+<!--                <LinearLayout-->
+<!--                    style="@style/LinearLayoutMain">-->
 
-                    <ImageView
-                        style="@style/ImageViewMain"
-                        android:src="@drawable/hoody_main" />
+<!--                    <ImageView-->
+<!--                        style="@style/ImageViewMain"-->
+<!--                        android:src="@drawable/hoody_main" />-->
 
-                </LinearLayout>
+<!--                </LinearLayout>-->
 
 
             </LinearLayout>

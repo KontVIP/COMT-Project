@@ -88,10 +88,16 @@
                         android:text="Код:
                         1234567890123" />
 
-                    <RatingBar
-                        style="?android:attr/ratingBarStyleSmall"
-                        android:layout_width="80dp"
-                        android:layout_height="wrap_content" />
+<!--                    <RatingBar-->
+<!--                        style="?android:attr/ratingBarStyleSmall"-->
+<!--                        android:layout_width="80dp"-->
+<!--                        android:layout_height="wrap_content" />-->
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/copy_id_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="COPY ID"/>
 
                     <LinearLayout
                         android:layout_width="wrap_content"

@@ -1,5 +1,7 @@
 package com.example.stylishclothes.catalog;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -13,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -57,6 +60,7 @@ public class OneProductActivity extends OptionsMenuProductActivity implements Vi
     Product product;
     String productId, title, category, selectedSize;
     DatabaseReference databaseReference;
+    Button copyIdButton;
 
     private ImageView shoppingCartImageView, favoriteImageView;
     int shoppingCartState = 0;
@@ -277,6 +281,17 @@ public class OneProductActivity extends OptionsMenuProductActivity implements Vi
                 }
             }
         });
+
+
+        copyIdButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("Product id", productId);
+                clipboard.setPrimaryClip(clip);
+                Toast.makeText(context, "Product id copied!", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void init() {
@@ -296,6 +311,7 @@ public class OneProductActivity extends OptionsMenuProductActivity implements Vi
         XLRadiobutton = (RadioButton) findViewById(R.id.XL_radiobutton);
         XXLRadiobutton = (RadioButton) findViewById(R.id.XXL_radiobutton);
         instagramButton = (ImageButton) findViewById(R.id.instagram_button);
+        copyIdButton = (Button) findViewById(R.id.copy_id_button);
     }
 
     @Override

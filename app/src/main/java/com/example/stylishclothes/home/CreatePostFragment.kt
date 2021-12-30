@@ -14,6 +14,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
+import com.example.stylishclothes.MainActivity
 import com.example.stylishclothes.R
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.firebase.database.DataSnapshot
@@ -63,23 +64,66 @@ class CreatePostFragment : Fragment() {
         }
 
         createButton.setOnClickListener {
-                //TODO load image into Firebase
+            val currentTime = System.currentTimeMillis()
+            if (firstByteImg != null) {
+                var firstIdEditText = rootView.findViewById<EditText>(R.id.first_product_id_edit_text)
+                if (firstIdEditText.text.trim().isNotEmpty()) {
 
-//            val currentTime = System.currentTimeMillis()
-//            if (firstByteImg != null) {
-//                var firstIdEditText = rootView.findViewById<EditText>(R.id.first_product_id_edit_text)
-//                if (firstIdEditText.text.trim().isNotEmpty()) {
-//                    FirebaseDatabase.getInstance().getReference("Home/timeline/$currentTime/p_1/id").setValue(firstIdEditText.text.trim())
-//
-//                    val storageRef = FirebaseStorage.getInstance().getReference("ImageDB").child(java.util.UUID.randomUUID().toString())
-//
-//                    storageRef.putBytes(firstByteImg!!).continueWithTask {  }
-//
-//                    if (secondByteImg != null) {
-//
-//                    }
-//                }
-//            }
+
+                    val storageRef = FirebaseStorage.getInstance().getReference("ImageDB").child(java.util.UUID.randomUUID().toString())
+                    var uploadTask = storageRef.putBytes(firstByteImg!!)
+                    val urlTask = uploadTask.continueWithTask { task ->
+                        if (!task.isSuccessful) {
+                            task.exception?.let {
+                                throw it
+                            }
+                        }
+                        storageRef.downloadUrl
+                    }.addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            val downloadUri = task.result //Uri of the first image
+                            FirebaseDatabase.getInstance().getReference("Home/timeline/$currentTime/p_1/id").setValue(firstIdEditText.text.toString().trim())
+                            FirebaseDatabase.getInstance().getReference("Home/timeline/$currentTime/p_1/img").setValue(downloadUri.toString())
+                        }
+                    }
+
+                    if (secondByteImg != null) {
+                        var secondIdEditText = rootView.findViewById<EditText>(R.id.second_product_id_edit_text)
+                        if (secondIdEditText.text.trim().isNotEmpty()) {
+
+                            val storageRef = FirebaseStorage.getInstance().getReference("ImageDB").child(java.util.UUID.randomUUID().toString())
+                            var uploadTask = storageRef.putBytes(secondByteImg!!)
+                            val urlTask = uploadTask.continueWithTask { task ->
+                                if (!task.isSuccessful) {
+                                    task.exception?.let {
+                                        throw it
+                                    }
+                                }
+                                storageRef.downloadUrl
+                            }.addOnCompleteListener { task ->
+                                if (task.isSuccessful) {
+                                    //Uri of the first image
+                                    val downloadUri = task.result //Uri of the first image
+                                    FirebaseDatabase.getInstance().getReference("Home/timeline/$currentTime/p_2/id").setValue(secondIdEditText.text.toString().trim())
+                                    FirebaseDatabase.getInstance().getReference("Home/timeline/$currentTime/p_2/img").setValue(downloadUri.toString())
+
+                                }
+                            }
+                            startActivity(Intent(context, MainActivity::class.java))
+                        } else {
+                            secondIdEditText.setError("Введіть id!")
+                            secondIdEditText.requestFocus()
+                        }
+                    } else {
+                        startActivity(Intent(context, MainActivity::class.java))
+                    }
+                } else {
+                    firstIdEditText.setError("Введіть id!")
+                    firstIdEditText.requestFocus()
+                }
+            } else {
+                Toast.makeText(context, "Виберіть перше зображення!", Toast.LENGTH_SHORT).show()
+            }
         }
 
         return rootView
@@ -111,19 +155,14 @@ class CreatePostFragment : Fragment() {
     private fun imageViewToByte(image: ImageView): ByteArray {
         var bitmap = (image.drawable as BitmapDrawable).bitmap
         val stream = ByteArrayOutputStream()
-        if (numImg == 0) {
-            while (bitmap.byteCount > 500000) {
-                bitmap =
-                    Bitmap.createScaledBitmap(bitmap, bitmap.width / 2, bitmap.height / 2, false)
-            }
-        } else {
+
             while (bitmap.byteCount > 25000000) {
                 bitmap = Bitmap.createScaledBitmap(
                     bitmap,
                     (bitmap.width / 1.1).toInt(), (bitmap.height / 1.1).toInt(), false
                 )
             }
-        }
+
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
         return stream.toByteArray()
     }
