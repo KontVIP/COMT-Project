@@ -3,24 +3,54 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/misha/AndroidStudioProjects/StylishClothes/app/src/main/res/drawable/avatar_circle.xml" value="0.3828125" />
         <entry key="..\:/Users/misha/AndroidStudioProjects/StylishClothes/app/src/main/res/drawable/border.xml" value="0.3828125" />
+        <entry key="..\:/Users/misha/AndroidStudioProjects/StylishClothes/app/src/main/res/drawable/border_checkout.xml" value="0.3828125" />
         <entry key="..\:/Users/misha/AndroidStudioProjects/StylishClothes/app/src/main/res/drawable/border_main.xml" value="0.3828125" />
         <entry key="..\:/Users/misha/AndroidStudioProjects/StylishClothes/app/src/main/res/drawable/bottom_rounded_corners.xml" value="0.3828125" />
+        <entry key="..\:/Users/misha/AndroidStudioProjects/StylishClothes/app/src/main/res/drawable/button_bg.xml" value="0.3828125" />
+        <entry key="..\:/Users/misha/AndroidStudioProjects/StylishClothes/app/src/main/res/drawable/button_bg_2.xml" value="0.3828125" />
+        <entry key="..\:/Users/misha/AndroidStudioProjects/StylishClothes/app/src/main/res/drawable/button_style.xml" value="0.3828125" />
+        <entry key="..\:/Users/misha/AndroidStudioProjects/StylishClothes/app/src/main/res/drawable/edit_text_bg.xml" value="0.3828125" />
+        <entry key="..\:/Users/misha/AndroidStudioProjects/StylishClothes/app/src/main/res/drawable/radiobutton_background.xml" value="0.3828125" />
+        <entry key="..\:/Users/misha/AndroidStudioProjects/StylishClothes/app/src/main/res/drawable/rec_border.xml" value="0.3828125" />
         <entry key="..\:/Users/misha/AndroidStudioProjects/StylishClothes/app/src/main/res/drawable/rounded_corners_main.xml" value="0.3828125" />
+        <entry key="..\:/Users/misha/AndroidStudioProjects/StylishClothes/app/src/main/res/drawable/splashscreen.xml" value="0.3828125" />
+        <entry key="..\:/Users/misha/AndroidStudioProjects/StylishClothes/app/src/main/res/drawable/vie_bg.xml" value="0.3828125" />
+        <entry key="..\:/Users/misha/AndroidStudioProjects/StylishClothes/app/src/main/res/layout/activity_admin_panel.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/misha/AndroidStudioProjects/StylishClothes/app/src/main/res/layout/activity_auth.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/misha/AndroidStudioProjects/StylishClothes/app/src/main/res/layout/activity_checkout.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/misha/AndroidStudioProjects/StylishClothes/app/src/main/res/layout/activity_create_post.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/misha/AndroidStudioProjects/StylishClothes/app/src/main/res/layout/activity_frogot_password.xml" value="0.1" />
         <entry key="..\:/Users/misha/AndroidStudioProjects/StylishClothes/app/src/main/res/layout/activity_main.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/misha/AndroidStudioProjects/StylishClothes/app/src/main/res/layout/activity_one_product.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/misha/AndroidStudioProjects/StylishClothes/app/src/main/res/layout/activity_product_list.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/misha/AndroidStudioProjects/StylishClothes/app/src/main/res/layout/fragment_catalog.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/misha/AndroidStudioProjects/StylishClothes/app/src/main/res/layout/fragment_create_ad.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/misha/AndroidStudioProjects/StylishClothes/app/src/main/res/layout/fragment_create_post.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/misha/AndroidStudioProjects/StylishClothes/app/src/main/res/layout/fragment_favorites.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/misha/AndroidStudioProjects/StylishClothes/app/src/main/res/layout/fragment_home.xml" value="0.33" />
+        <entry key="..\:/Users/misha/AndroidStudioProjects/StylishClothes/app/src/main/res/layout/fragment_login_tab.xml" value="0.33" />
+        <entry key="..\:/Users/misha/AndroidStudioProjects/StylishClothes/app/src/main/res/layout/fragment_menu.xml" value="0.33" />
+        <entry key="..\:/Users/misha/AndroidStudioProjects/StylishClothes/app/src/main/res/layout/fragment_processing.xml" value="0.2109375" />
+        <entry key="..\:/Users/misha/AndroidStudioProjects/StylishClothes/app/src/main/res/layout/fragment_sent.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/misha/AndroidStudioProjects/StylishClothes/app/src/main/res/layout/fragment_shopping_cart.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/misha/AndroidStudioProjects/StylishClothes/app/src/main/res/layout/fragment_signup_tab.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/misha/AndroidStudioProjects/StylishClothes/app/src/main/res/layout/fragment_watiting.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/misha/AndroidStudioProjects/StylishClothes/app/src/main/res/layout/list_catalog_item.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/misha/AndroidStudioProjects/StylishClothes/app/src/main/res/layout/list_checkout_product_item.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/misha/AndroidStudioProjects/StylishClothes/app/src/main/res/layout/list_offer_item.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/misha/AndroidStudioProjects/StylishClothes/app/src/main/res/layout/list_offer_jtem.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/misha/AndroidStudioProjects/StylishClothes/app/src/main/res/layout/list_product_item.xml" value="0.33" />
         <entry key="..\:/Users/misha/AndroidStudioProjects/StylishClothes/app/src/main/res/layout/list_shopping_cart_item.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/misha/AndroidStudioProjects/StylishClothes/app/src/main/res/layout/recommended_list.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/misha/AndroidStudioProjects/StylishClothes/app/src/main/res/layout/toolbar_activity.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/misha/AndroidStudioProjects/StylishClothes/app/src/main/res/layout/view_pager_item.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/misha/AndroidStudioProjects/StylishClothes/app/src/main/res/layout/view_pager_item_main_ad.xml" value="0.18854166666666666" />
+        <entry key="..\:/Users/misha/AndroidStudioProjects/StylishClothes/app/src/main/res/menu/bottom_navigation.xml" value="0.20052083333333334" />
+        <entry key="..\:/Users/misha/AndroidStudioProjects/StylishClothes/app/src/main/res/menu/favorite_product_popup_menu.xml" value="0.2109375" />
+        <entry key="..\:/Users/misha/AndroidStudioProjects/StylishClothes/app/src/main/res/menu/product_menu.xml" value="0.20052083333333334" />
+        <entry key="..\:/Users/misha/AndroidStudioProjects/StylishClothes/app/src/main/res/menu/product_popup_menu.xml" value="0.20052083333333334" />
       </map>
     </option>
   </component>

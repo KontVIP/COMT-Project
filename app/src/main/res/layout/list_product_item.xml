@@ -71,7 +71,7 @@
                     android:paddingBottom="10dp"
                     android:layout_height="wrap_content"
                     android:background="@android:color/transparent"
-                    android:visibility="visible"
+                    android:visibility="gone"
                     app:srcCompat="@drawable/ic_baseline_more_vert_24" />
 
             </LinearLayout>

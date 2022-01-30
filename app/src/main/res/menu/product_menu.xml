@@ -7,13 +7,4 @@
         android:title="Кошик"
         app:showAsAction="ifRoom" />
 
-    <item android:id="@+id/more_option_1"
-        android:title="Option 1"
-        app:showAsAction="never" />
-
-    <item android:id="@+id/more_option_2"
-        android:title="Option 2"
-        app:showAsAction="never" />
-
-
 </menu>

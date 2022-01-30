@@ -18,7 +18,6 @@
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:elevation="12dp"
-            android:id="@+id/view2"
             app:cardCornerRadius="40dp"
             android:layout_centerHorizontal="true"
             android:innerRadius="0dp"
@@ -27,7 +26,7 @@
 
             <ImageView
                 android:id="@+id/avatar_image_view"
-                android:src="@drawable/logo"
+                android:src="@drawable/not_loaded_profile"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@drawable/avatar_circle"
@@ -58,6 +57,19 @@
         </LinearLayout>
 
     </LinearLayout>
+
+    <TextView
+        android:visibility="gone"
+        android:id="@+id/admin_panel_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/border"
+        android:gravity="center|left"
+        android:paddingLeft="8dp"
+        android:textColor="@android:color/holo_red_dark"
+        android:text="Admin panel"
+        android:fontFamily="sans-serif-black"
+        android:textSize="30sp" />
 
     <TextView
         android:id="@+id/sign_out_text_view"

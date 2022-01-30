@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.example.stylishclothes.catalog.TouchImageView
+    <com.shop.stylishclothes.catalog.TouchImageView
         android:id="@+id/touch_image"
         android:src="@drawable/hoody"
         android:layout_width="match_parent"

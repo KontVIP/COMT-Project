@@ -15,6 +15,43 @@
       },
       "oauth_client": [
         {
+          "client_id": "948077990902-8q1n7phdiqv433ui98l1jb1tm6isskhi.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.stylishclothes",
+            "certificate_hash": "45ac40a51185bf3242ec9b4d77d3956870429741"
+          }
+        },
+        {
+          "client_id": "948077990902-e6e17g0mpuq9mjm8bs50fvfnpq8b7fil.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCbcQTn8Mj7VFA34TmqG3JWltlWdVd4hIM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "948077990902-e6e17g0mpuq9mjm8bs50fvfnpq8b7fil.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:948077990902:android:0982454cf86ee89b90edd7",
+        "android_client_info": {
+          "package_name": "com.shop.stylishclothes"
+        }
+      },
+      "oauth_client": [
+        {
           "client_id": "948077990902-e6e17g0mpuq9mjm8bs50fvfnpq8b7fil.apps.googleusercontent.com",
           "client_type": 3
         }

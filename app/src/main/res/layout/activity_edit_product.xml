@@ -309,7 +309,6 @@
                             android:text="Є в наявності"/>
 
                         <RadioButton
-                            android:id="@+id/available_no"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Нема в наявності"/>
